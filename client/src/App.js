@@ -54,7 +54,8 @@ const App = () => {
     }
   }
 
-  const onSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     console.log('something happened');
   }
 
@@ -74,6 +75,7 @@ const App = () => {
         * Execute the actual wave from your smart contract
         */
         const waveTxn = await wavePortalContract.wave(newWave);
+        setNewWave('');
         console.log("Mining...", waveTxn.hash);
 
         await waveTxn.wait();
@@ -126,6 +128,11 @@ const App = () => {
     checkIfWalletIsConnected();
   }, [])
 
+  useEffect(() => {
+    getAllWaves();
+  }, []);
+
+
   return (
     <div className="mainContainer">
       <div className="dataContainer">
@@ -140,11 +147,7 @@ const App = () => {
         <button className="waveButton" onClick={wave}>
           Wave at Me
         </button>
-        <form>
-          Send a Wave <input>
-        </form>
-
-
+        <input type='text' name="message" onChange={(e) => setNewWave(e.target.value)} />
         {!currentAccount && (
           <button className="waveButton" onClick={connectWallet}>
             Connect Wallet
