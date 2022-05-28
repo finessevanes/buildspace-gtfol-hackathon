@@ -7,7 +7,7 @@ const App = () => {
   const [currentAccount, setCurrentAccount] = useState("");
   const [allWaves, setAllWaves] = useState([]);
   const [newWave, setNewWave] = useState('');
-  const contractAddress = "0x7aBe8077a5E42dC398790a9CC393782a5A5FFCf2";
+  const contractAddress = "0xf7B2F9d4eC85e1E47E4097480C20CF9B65c88D71";
   const contractABI = abi.abi;
 
   const checkIfWalletIsConnected = async () => {
@@ -54,11 +54,6 @@ const App = () => {
     }
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('something happened');
-  }
-
   const wave = async () => {
     try {
       const { ethereum } = window;
@@ -92,8 +87,9 @@ const App = () => {
   }
 
   const getAllWaves = async () => {
+    const { ethereum } = window;
     try {
-      const { ethereum } = window;
+      
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
@@ -112,9 +108,6 @@ const App = () => {
           });
         });
 
-        /*
-         * Store our data in React State
-         */
         setAllWaves(wavesCleaned);
       } else {
         console.log("Ethereum object doesn't exist!")
@@ -123,6 +116,35 @@ const App = () => {
       console.log(error);
     }
   }
+  useEffect(() => {
+    let wavePortalContract;
+  
+    const onNewWave = (from, timestamp, message) => {
+      console.log("NewWave", from, timestamp, message);
+      setAllWaves(prevState => [
+        ...prevState,
+        {
+          address: from,
+          timestamp: new Date(timestamp * 1000),
+          message: message,
+        },
+      ]);
+    };
+  
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+  
+      wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+      wavePortalContract.on("NewWave", onNewWave);
+    }
+  
+    return () => {
+      if (wavePortalContract) {
+        wavePortalContract.off("NewWave", onNewWave);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     checkIfWalletIsConnected();
@@ -147,7 +169,7 @@ const App = () => {
         <button className="waveButton" onClick={wave}>
           Wave at Me
         </button>
-        <input type='text' name="message" onChange={(e) => setNewWave(e.target.value)} />
+        <input type='text' name="message" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
         {!currentAccount && (
           <button className="waveButton" onClick={connectWallet}>
             Connect Wallet
