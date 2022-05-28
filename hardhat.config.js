@@ -1,3 +1,4 @@
+require('dotenv').config()
 require("@nomiclabs/hardhat-waffle");
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -16,6 +17,17 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
-module.exports = {
-  solidity: "0.8.4",
+
+const { REACT_APP_ALCHEMY_API_KEY, REACT_APP_PROJECTS_ACCOUNT_KEY } = process.env
+
+// alchemy key: CryptoVan
+// projects account
+ module.exports = {
+  solidity: "0.8.0",
+  networks: {
+    rinkeby: {
+      url: `https://eth-rinkeby.alchemyapi.io/v2/${REACT_APP_ALCHEMY_API_KEY}`,
+      accounts: [REACT_APP_PROJECTS_ACCOUNT_KEY]
+    },
+  },
 };
