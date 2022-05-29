@@ -9,6 +9,7 @@ const App = () => {
   const [newPost, setNewPost] = useState('');
   const [checking, setChecking] = useState(true);
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
+  const [isOnRinkeby, setIsOnRinkeby] = useState(false);
   const contractAddress = "0x29Eb53F350892bDe058F8FC95EB19258A4ae9020";
   const contractABI = abi.abi;
 
@@ -16,6 +17,8 @@ const App = () => {
   const address = useAddress();
   const connectWallet = useMetamask();
   const networkMismatched = useNetworkMismatch();
+
+  console.log()
 
   // Switch network
   const [, switchNetwork] = useNetwork();
@@ -51,6 +54,21 @@ const App = () => {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const checkIfRinkeby = async () => {
+    try {
+      const { ethereum } = window;
+      const chainId = await ethereum.request({ method: 'eth_chainId' });
+      if (chainId === '0x4'){
+        setIsOnRinkeby(true);
+      } else {
+        setIsOnRinkeby(false);
+      }
+      
+    } catch (error){
       console.log(error);
     }
   }
@@ -145,6 +163,10 @@ const App = () => {
   useEffect(() => {
     getAllPosts();
   }, []);
+
+  useEffect(() => {
+    checkIfRinkeby();
+  }, [])
 
   const renderVote = () => {
     if (checking) {
