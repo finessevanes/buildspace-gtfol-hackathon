@@ -9,7 +9,7 @@ const App = () => {
   const [newWave, setNewWave] = useState('');
   const [checking, setChecking] = useState(true);
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
-  const contractAddress = "0xf7B2F9d4eC85e1E47E4097480C20CF9B65c88D71";
+  const contractAddress = "0x29Eb53F350892bDe058F8FC95EB19258A4ae9020";
   const contractABI = abi.abi;
 
    // allow user to connect to app with metamask, and obtain address
