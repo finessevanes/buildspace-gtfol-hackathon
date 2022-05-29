@@ -4,22 +4,13 @@ const main = async () => {
   await postContract.deployed();
   console.log("Contract addy:", postContract.address);
 
-  let waveCount;
-  waveCount = await postContract.getTotalWaves();
-  console.log(waveCount.toNumber());
+  let postCount;
+  postCount = await postContract.getTotalPosts();
+  console.log(postCount.toNumber());
 
-  /**
-   * Let's send a few waves!
-   */
-  let waveTxn = await postContract.wave("A message!");
-  await waveTxn.wait(); // Wait for the transaction to be mined
 
-  const [_, randomPerson] = await hre.ethers.getSigners();
-  waveTxn = await postContract.connect(randomPerson).wave("Another message!");
-  await waveTxn.wait(); // Wait for the transaction to be mined
-
-  let allWaves = await postContract.getAllWaves();
-  console.log(allWaves);
+  let allPosts = await postContract.getAllPosts();
+  console.log(allPosts);
 };
 
 const runMain = async () => {
