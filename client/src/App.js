@@ -2,43 +2,23 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import "./App.css";
 import abi from '../src/utils/WavePortal.json';
-import { useAddress, useMetamask } from '@thirdweb-dev/react';
+import { useAddress, useMetamask, useNetwork, useNetworkMismatch, useNFTCollection, useNFTDrop } from '@thirdweb-dev/react';
 
 const App = () => {
-  const [currentAccount, setCurrentAccount] = useState("");
   const [allWaves, setAllWaves] = useState([]);
   const [newWave, setNewWave] = useState('');
   const contractAddress = "0xf7B2F9d4eC85e1E47E4097480C20CF9B65c88D71";
   const contractABI = abi.abi;
 
-  const checkIfWalletIsConnected = async () => {
-    try {
-      const { ethereum } = window;
-
-      if (!ethereum) {
-        console.log("Make sure you have metamask!");
-        return;
-      } else {
-        getAllWaves();
-        console.log("We have the ethereum object", ethereum);
-      }
-
-      const accounts = await ethereum.request({ method: "eth_accounts" });
-
-      if (accounts.length !== 0) {
-        const account = accounts[0];
-        console.log("Found an authorized account:", account);
-        setCurrentAccount(currentAccount);
-      } else {
-        console.log("No authorized account found")
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
+   // allow user to connect to app with metamask, and obtain address
   const address = useAddress();
   const connectWallet = useMetamask();
+  const networkMismatched = useNetworkMismatch();
+  const [, switchNetwork] = useNetwork(); // Switch network
+  // Polygon - Buildspace NFT Contract address
+  // const nftCollection = useNFTDrop("0x3CD266509D127d0Eac42f4474F57D0526804b44e");
+  // Rinkeby - thirdweb sample contract
+  const nftCollection = useNFTDrop("0xb1c42E0C4289E68f1C337Eb0Da6a38C4c9F3f58e");
 
   const wave = async () => {
     try {
@@ -133,8 +113,31 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    checkIfWalletIsConnected();
-  }, [])
+    // If they don't have an connected wallet, return
+    if (!address) {
+      return;
+    }
+
+    const checkBalance = async () => {
+      console.log(address);
+      try {
+        // const nfts = await nftCollection?.getOwned(address);
+        const nfts = await nftCollection?.getOwned("0xF11D6862e655b5F4e8f62E00471261D2f9c7E380");
+        console.log(nfts);
+      } catch (error) {
+        // setHasClaimedNFT(false);
+        // setChecking(false);
+        console.error("Failed to get NFTs", error);
+      }
+    };
+    checkBalance();
+  }, [
+    address,
+    connectWallet,
+    networkMismatched,
+    switchNetwork,
+    nftCollection
+  ])
 
   useEffect(() => {
     getAllWaves();
