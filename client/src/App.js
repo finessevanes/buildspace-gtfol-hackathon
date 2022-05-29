@@ -2,43 +2,24 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import "./App.css";
 import abi from '../src/utils/WavePortal.json';
-import { useAddress, useMetamask } from '@thirdweb-dev/react';
+import { useAddress, useMetamask, useNetwork, useNetworkMismatch, useNFTCollection, useNFTDrop } from '@thirdweb-dev/react';
 
 const App = () => {
-  const [currentAccount, setCurrentAccount] = useState("");
   const [allWaves, setAllWaves] = useState([]);
   const [newWave, setNewWave] = useState('');
   const contractAddress = "0xf7B2F9d4eC85e1E47E4097480C20CF9B65c88D71";
   const contractABI = abi.abi;
 
-  const checkIfWalletIsConnected = async () => {
-    try {
-      const { ethereum } = window;
-
-      if (!ethereum) {
-        console.log("Make sure you have metamask!");
-        return;
-      } else {
-        getAllWaves();
-        console.log("We have the ethereum object", ethereum);
-      }
-
-      const accounts = await ethereum.request({ method: "eth_accounts" });
-
-      if (accounts.length !== 0) {
-        const account = accounts[0];
-        console.log("Found an authorized account:", account);
-        setCurrentAccount(currentAccount);
-      } else {
-        console.log("No authorized account found")
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
+   // allow user to connect to app with metamask, and obtain address
   const address = useAddress();
   const connectWallet = useMetamask();
+  const networkMismatched = useNetworkMismatch();
+  const [, switchNetwork] = useNetwork(); // Switch network
+  // Polygon - Buildspace NFT Contract address
+  const nftCollection = useNFTCollection("0x3CD266509D127d0Eac42f4474F57D0526804b44e");
+
+  const [checking, setChecking] = useState(true);
+  const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
 
   const wave = async () => {
     try {
@@ -102,6 +83,7 @@ const App = () => {
       console.log(error);
     }
   }
+
   useEffect(() => {
     let wavePortalContract;
 
@@ -133,12 +115,57 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    checkIfWalletIsConnected();
-  }, [])
+    // If they don't have an connected wallet, return
+    if (!address) {
+      return;
+    }
+
+    // As we get errors if we owned Buildspace's NFT -> we can set it to true if there's an error
+    // And if wallet does not own Buildspace's NFT -> nfts.length == 0;
+    const checkBalance = async () => {
+      try {
+        const nfts = await nftCollection.getOwned(address);
+        if (nfts.length === 0) {
+          setHasClaimedNFT(false);
+        }
+        setChecking(false);
+      } catch (error) {
+        setHasClaimedNFT(true);
+        setChecking(false);
+        console.error("Failed to get NFTs", error);
+      }
+    };
+    checkBalance();
+  }, [
+    address,
+    connectWallet,
+    networkMismatched,
+    switchNetwork,
+    nftCollection,
+    hasClaimedNFT
+  ])
 
   useEffect(() => {
     getAllWaves();
   }, []);
+
+  const renderVote = () => {
+    if (checking) {
+      return (
+        <div>
+          <h1>Checking your wallet...</h1>
+        </div>
+      );
+    } else {
+      if (hasClaimedNFT) {
+        return (
+          <h1>You can vote!</h1>
+        )
+      } else {
+        return (<h1>No!!</h1>)
+      }
+    }
+  }
 
   // height: 428px
   // width: 926px;
@@ -195,15 +222,13 @@ const App = () => {
       </div>
     </div>
       <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={wave}>Make a post</button>
-      {/*
-         * If there is no currentAccount render this button
-         */}
-        {!currentAccount && (
+      <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
+      {renderVote()}
+      {!address && (
           <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={connectWallet}>
             Connect Wallet
           </button>
-        )}
-        <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
+      )}
     </div>
   );
 }
