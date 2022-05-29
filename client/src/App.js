@@ -145,7 +145,8 @@ const App = () => {
     connectWallet,
     networkMismatched,
     switchNetwork,
-    nftCollection
+    nftCollection,
+    hasClaimedNFT
   ])
 
   useEffect(() => {
