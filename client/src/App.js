@@ -185,20 +185,20 @@ const App = () => {
   p-7
   rounded-md
   shadow-xl
-  mb-6
+  mr-4
+  mb-4
   `
   const stickynoteContainer = `
-  md:flex-wrap
-  md:flex
-  md:space-y-0
-  space-y-4
+  md:grid
+  md:grid-cols-7
   md:justify-center
   overflow-auto
   `
 
   return (
     <div className={container}>
-      <p className="text-7xl text-yellowbutton mt-16 mb-16 font-smythe">The Great Wall of Ideas</p>
+      <nav className="text-yellowbutton">This webside use Rinkeby testnet, make you're not connected on the mainet before posting!</nav>
+      <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe">The Great Wall of Ideas</p>
       <div className={stickynoteContainer}>
         {allPosts.map((post, index) => {
           return (
@@ -209,8 +209,8 @@ const App = () => {
       </div>
 
     <div class="flex justify-center">
-      <div class="block p-6 rounded-lg shadow-lg bg-white max-w-sm">
-        <p class="text-buttontext font-bold mb-4">
+      <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6">
+        <p class="text-buttontext font-bold mt-4 mb-4">
         Do you an idea you want to share? Connect you wallet below! 
         We want to be sure you are a Buildspace Alumni</p>
       </div>
