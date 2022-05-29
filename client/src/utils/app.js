@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import "./App.css";
 import abi from '../src/utils/WavePortal.json';
-import { useAddress, useMetamask } from '@thirdweb-dev/react';
 
 const App = () => {
   const [currentAccount, setCurrentAccount] = useState("");
@@ -28,7 +27,7 @@ const App = () => {
       if (accounts.length !== 0) {
         const account = accounts[0];
         console.log("Found an authorized account:", account);
-        setCurrentAccount(currentAccount);
+        setCurrentAccount(account);
       } else {
         console.log("No authorized account found")
       }
@@ -37,8 +36,23 @@ const App = () => {
     }
   }
 
-  const address = useAddress();
-  const connectWallet = useMetamask();
+  const connectWallet = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (!ethereum) {
+        alert("Get MetaMask!");
+        return;
+      }
+
+      const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+
+      console.log("Connected", accounts[0]);
+      setCurrentAccount(accounts[0]);
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const wave = async () => {
     try {
@@ -75,7 +89,7 @@ const App = () => {
   const getAllWaves = async () => {
     const { ethereum } = window;
     try {
-
+      
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
@@ -104,7 +118,7 @@ const App = () => {
   }
   useEffect(() => {
     let wavePortalContract;
-
+  
     const onNewWave = (from, timestamp, message) => {
       console.log("NewWave", from, timestamp, message);
       setAllWaves(prevState => [
@@ -116,15 +130,15 @@ const App = () => {
         },
       ]);
     };
-
+  
     if (window.ethereum) {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-
+  
       wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
       wavePortalContract.on("NewWave", onNewWave);
     }
-
+  
     return () => {
       if (wavePortalContract) {
         wavePortalContract.off("NewWave", onNewWave);
@@ -140,54 +154,38 @@ const App = () => {
     getAllWaves();
   }, []);
 
-  // height: 428px
-  // width: 926px;
-
   const container = `
   flex
-  w-screen
-  h-screen
-  object-center
-  bg-synthwave
-  bg-cover
-  bg-center
-  flex-col 
-  items-center
-  pl-4
-  pr-4
+  justify-center
+  w-100
   `
-  const stickyNote = `
+  const header = `
   text-center
-  h-40
-  w-44
-  bg-rose-400
-  p-7
-  rounded-md
-  shadow-xl
-  mb-6
-  `
-  const stickynoteContainer = `
-  md:flex-wrap
-  md:flex
-  md:space-y-0
-  space-y-4
-  md:justify-center
-  overflow-auto
   `
 
   return (
     <div className={container}>
-      <p className="text-7xl text-yellowbutton mt-16 mb-16 font-smythe">The Great Wall of Ideas</p>
-      <div className={stickynoteContainer}>
+      <div className={header}>
+      <button className="waveButton" onClick={wave}>
+          Wave at Me
+        </button>
+        <input type='text' name="message" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
+        {!currentAccount && (
+          <button className="waveButton" onClick={connectWallet}>
+            Connect Wallet
+          </button>
+        )}
+      </div>
+
+
         {allWaves.map((wave, index) => {
           return (
-            <div key={index} className={stickyNote}>
-              Message: {wave.message}
+            <div key={index} style={{ backgroundColor: "OldLace", marginTop: "16px", padding: "8px" }}>
+              <div>Address: {wave.address}</div>
+              <div>Time: {wave.timestamp.toString()}</div>
+              <div>Message: {wave.message}</div>
             </div>)
         })}
-      </div>
-      <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={wave}>Make a post</button>
-        <input type='text' className="mb-6" name="message" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
     </div>
   );
 }
