@@ -199,7 +199,7 @@ const App = () => {
   return (
     <div className={container}>
       <nav className="text-yellowbutton">This webside use Rinkeby testnet, make you're not connected on the mainet before posting!</nav>
-      <p className="text-7xl text-yellowbutton mt-16 mb-16 font-smythe">The Great Wall of Ideas</p>
+      <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe">The Great Wall of Ideas</p>
       <div className={stickynoteContainer}>
         {allWaves.map((wave, index) => {
           return (
@@ -210,22 +210,20 @@ const App = () => {
       </div>
 
     <div class="flex justify-center">
-      <div class="block p-6 rounded-lg shadow-lg bg-white max-w-sm mt-6">
+      <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6">
         <p class="text-buttontext font-bold mt-4 mb-4">
         Do you an idea you want to share? Connect you wallet below! 
         We want to be sure you are a Buildspace Alumni</p>
       </div>
     </div>
-      {/*
-         * If there is no currentAccount render this button
-         */}
-        {!currentAccount && (
-          <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-6 mt-6" onClick={connectWallet}>
+      <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={wave}>Make a post</button>
+      <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
+      {renderVote()}
+      {!address && (
+          <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={connectWallet}>
             Connect Wallet
           </button>
-        )}
-        <input type='text' className="px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
-        <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-6" onClick={wave}>Make a post</button>
+      )}
     </div>
   );
 }
