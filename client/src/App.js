@@ -187,7 +187,7 @@ const App = () => {
         })}
       </div>
       <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={wave}>Make a post</button>
-        <input type='text' className="mb-6" name="message" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
+        <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
     </div>
   );
 }
