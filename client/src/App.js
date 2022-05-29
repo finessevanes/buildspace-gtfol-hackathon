@@ -3,24 +3,15 @@ import { ethers } from "ethers";
 import "./App.css";
 import abi from '../src/utils/SlamPost.json';
 import { useAddress, useMetamask, useNetwork, useNetworkMismatch, useNFTCollection, useNFTDrop } from '@thirdweb-dev/react';
-import toast, { Toaster } from 'react-hot-toast';
 
 const App = () => {
   const [allPosts, setAllPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [checking, setChecking] = useState(true);
+  const [isOnRinkeby, setIsOnRinkeby] = useState(true);
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
   const contractAddress = "0x29Eb53F350892bDe058F8FC95EB19258A4ae9020";
   const contractABI = abi.abi;
-  const alertNetworkNotification = () => toast('Please log onto the Rinkeby Network', {
-    icon: `⛔️`,
-    duration: Infinity,
-    position: 'top-right',
-    style: {
-      backgroundColor: '#FECAD5',
-      border: '1px solid #FEA3B6',
-    },
-  });
 
   // allow user to connect to app with metamask, and obtain address
   const address = useAddress();
@@ -167,9 +158,9 @@ const App = () => {
         });
         const chainId = await ethereum.request({ method: 'eth_chainId' });
         if (chainId === '0x4') {
-          toast.dismiss(alertNetworkNotification);
+          setIsOnRinkeby(true)
         } else {
-          alertNetworkNotification();
+          setIsOnRinkeby(false)
         }
   
       } catch (error) {
@@ -231,7 +222,6 @@ const App = () => {
 
   return (
     <div className={container}>
-      <Toaster />
       <p className="text-7xl text-yellowbutton mt-16 mb-16 font-smythe text-center">The Great Wall of Ideas</p>
       <div className={stickynoteContainer}>
         {allPosts.map((post, index) => {
