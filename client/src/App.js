@@ -75,7 +75,7 @@ const App = () => {
   const getAllWaves = async () => {
     const { ethereum } = window;
     try {
-      
+
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
@@ -104,7 +104,7 @@ const App = () => {
   }
   useEffect(() => {
     let wavePortalContract;
-  
+
     const onNewWave = (from, timestamp, message) => {
       console.log("NewWave", from, timestamp, message);
       setAllWaves(prevState => [
@@ -116,15 +116,15 @@ const App = () => {
         },
       ]);
     };
-  
+
     if (window.ethereum) {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-  
+
       wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
       wavePortalContract.on("NewWave", onNewWave);
     }
-  
+
     return () => {
       if (wavePortalContract) {
         wavePortalContract.off("NewWave", onNewWave);
@@ -140,44 +140,48 @@ const App = () => {
     getAllWaves();
   }, []);
 
+  // height: 428px
+  // width: 926px;
+
   const container = `
   flex
-  justify-center
-  w-100
-  bg-red-400
-  align-center
-  flex-col
+  w-screen
+  h-screen
+  object-center
+  bg-synthwave
+  bg-synthwave
+  bg-cover
   `
-  const header = `
+  const stickyNote = `
   text-center
-  bg-emerald-200
+  h-40
+  w-44
+  bg-rose-400
+  p-7
+  rounded-md
+  shadow-xl
   `
-  const dataContainer = `
-  text-center
-  bg-blue-200
-  border-lime-600
-  bg-yellow-200
-  m-10
-  `
-  const footer = `
-  text-center
-  bg-blue-200
+  const whiteboard = `
+  p-5
+  rounded-md
+  bg-opacity-25
+
   `
 
   return (
+
     <div className={container}>
-      <div className={header}>
-        <h1>pick up a marker</h1>
-      </div>
-      <div className={dataContainer}>
-        <h1>Pick up a marker</h1>
-        <h1>Pick up a marker</h1>
-        <h1>Pick up a marker</h1>
-      </div>
-      <div className={footer}>
-        <h1>pick up a marker</h1>
+      <div className={whiteboard}>
+        {allWaves.map((wave, index) => {
+          return (
+            <div key={index} className={stickyNote}>
+              <div>Message: {wave.message}</div>
+            </div>)
+        })}
       </div>
     </div>
+
+
   );
 }
 

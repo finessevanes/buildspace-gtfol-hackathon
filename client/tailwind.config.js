@@ -4,10 +4,16 @@ module.exports = {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        'synthwave': "url('./assets/background.png')",
+      },
       colors: {
-        vaneo: '#ef4444'
+        vaneo: '#ef4444',
+        notepad: '#fe79c97'
       }
     },
   },
   plugins: [],
 }
+
+// /Users/VMercado/Desktop/buildspace-hackathon-gtfol/client/src/assets/background.png
