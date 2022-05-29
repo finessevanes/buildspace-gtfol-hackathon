@@ -11,6 +11,7 @@ contract WavePortal {
      * A little magic, Google what events are in Solidity!
      */
     event NewWave(
+        uint256 index;
         address indexed from,
         string message,
         uint256 timestamp,
@@ -22,6 +23,7 @@ contract WavePortal {
      * A struct is basically a custom datatype where we can customize what we want to hold inside it.
      */
     struct Wave {
+        uint256 index;
         address waver; // The address of the user who waved.
         string message; // The message the user sent.
         uint256 timestamp; // The timestamp when the user waved.
@@ -57,14 +59,15 @@ contract WavePortal {
         /*
          * This is where I actually store the wave data in the array.
          */
-        waves.push(Wave(msg.sender, _message, block.timestamp, 0));
-
+        waves.push(Wave(totalWaves, msg.sender, _message, block.timestamp, 0));
+        
         /*
          * I added some fanciness here, Google it and try to figure out what it is!
          * Let me know what you learn in #general-chill-chat
          */
-        emit NewWave(msg.sender, _message, block.timestamp, 0);
+        emit NewWave(totalWaves, msg.sender, _message,  block.timestamp, 0);
         totalWaves += 1;
+        
     }
 
     /*
@@ -97,8 +100,13 @@ contract WavePortal {
     }
 
     function unvote(uint256 ideaIndex) public {
+        Wave memory userVoted = userVotedOn();
+
         Voter storage sender = voters[msg.sender];
         require(sender.voted, "Has not voted.");
+        require(voters.voted_on != userVoted.index);
+        require(ideaIndex < waves.length, "IdeaIndex does not exist");
+        
         sender.voted = false;
         sender.voted_on = ideaIndex;
 
@@ -110,6 +118,7 @@ contract WavePortal {
     }
 
     function userVotedOn() public view returns (Wave memory) {
+        require(voters[msg.sender].voted, "Has not voted");
         Wave memory result;
 
         for (uint i = 0; i < waves.length; i++) {
