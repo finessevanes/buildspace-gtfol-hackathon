@@ -1,44 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import "./App.css";
-import abi from '../src/utils/WavePortal.json';
-import { useAddress, useMetamask } from '@thirdweb-dev/react';
+import abi from '../src/utils/SlamPost.json';
+import { useAddress, useMetamask, useNetwork, useNetworkMismatch, useNFTCollection, useNFTDrop } from '@thirdweb-dev/react';
 
 const App = () => {
-  const [currentAccount, setCurrentAccount] = useState("");
   const [allWaves, setAllWaves] = useState([]);
   const [newWave, setNewWave] = useState('');
+  const [checking, setChecking] = useState(true);
+  const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
   const contractAddress = "0xf7B2F9d4eC85e1E47E4097480C20CF9B65c88D71";
   const contractABI = abi.abi;
 
-  const checkIfWalletIsConnected = async () => {
-    try {
-      const { ethereum } = window;
-
-      if (!ethereum) {
-        console.log("Make sure you have metamask!");
-        return;
-      } else {
-        getAllWaves();
-        console.log("We have the ethereum object", ethereum);
-      }
-
-      const accounts = await ethereum.request({ method: "eth_accounts" });
-
-      if (accounts.length !== 0) {
-        const account = accounts[0];
-        console.log("Found an authorized account:", account);
-        setCurrentAccount(currentAccount);
-      } else {
-        console.log("No authorized account found")
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
+   // allow user to connect to app with metamask, and obtain address
   const address = useAddress();
   const connectWallet = useMetamask();
+  const networkMismatched = useNetworkMismatch();
+
+  // Switch network
+  const [, switchNetwork] = useNetwork();
+
+  // Polygon - Buildspace NFT Contract address
+  const nftCollection = useNFTCollection("0x3CD266509D127d0Eac42f4474F57D0526804b44e");
 
   const wave = async () => {
     try {
@@ -47,22 +30,22 @@ const App = () => {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
-        const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
 
-        let count = await wavePortalContract.getTotalWaves();
+        let count = await slamPostContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
 
         /*
         * Execute the actual wave from your smart contract
         */
-        const waveTxn = await wavePortalContract.wave(newWave);
+        const waveTxn = await slamPostContract.wave(newWave);
         setNewWave('');
         console.log("Mining...", waveTxn.hash);
 
         await waveTxn.wait();
         console.log("Mined -- ", waveTxn.hash);
 
-        count = await wavePortalContract.getTotalWaves();
+        count = await slamPostContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
       } else {
         console.log("Ethereum object doesn't exist!");
@@ -73,17 +56,14 @@ const App = () => {
   }
 
   const getAllWaves = async () => {
-    const { ethereum } = window;
     try {
-
+      const { ethereum } = window;
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
-        const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
-
-        const waves = await wavePortalContract.getAllWaves();
+        const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const waves = await slamPostContract.getAllWaves();
         console.log('## WAVES ##', waves);
-
 
         let wavesCleaned = [];
         waves.forEach(wave => {
@@ -102,9 +82,9 @@ const App = () => {
       console.log(error);
     }
   }
-  useEffect(() => {
-    let wavePortalContract;
 
+  useEffect(() => {
+    let slamPostContract;
     const onNewWave = (from, timestamp, message) => {
       console.log("NewWave", from, timestamp, message);
       setAllWaves(prevState => [
@@ -121,27 +101,68 @@ const App = () => {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
 
-      wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
-      wavePortalContract.on("NewWave", onNewWave);
+      slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+      slamPostContract.on("NewWave", onNewWave);
     }
 
     return () => {
-      if (wavePortalContract) {
-        wavePortalContract.off("NewWave", onNewWave);
+      if (slamPostContract) {
+        slamPostContract.off("NewWave", onNewWave);
       }
     };
   }, []);
 
   useEffect(() => {
-    checkIfWalletIsConnected();
-  }, [])
+    if (!address) {
+      return;
+    }
+
+    // As we get errors if we owned Buildspace's NFT -> we can set it to true if there's an error
+    // And if wallet does not own Buildspace's NFT -> nfts.length == 0;
+    const checkBalance = async () => {
+      try {
+        const nfts = await nftCollection.getOwned(address);
+        if (nfts.length === 0) {
+          setHasClaimedNFT(false);
+        }
+        setChecking(false);
+      } catch (error) {
+        setHasClaimedNFT(true);
+        setChecking(false);
+        console.error("Failed to get NFTs", error);
+      }
+    };
+    checkBalance();
+  }, [
+    address,
+    connectWallet,
+    networkMismatched,
+    switchNetwork,
+    nftCollection,
+    hasClaimedNFT
+  ])
 
   useEffect(() => {
     getAllWaves();
   }, []);
 
-  // height: 428px
-  // width: 926px;
+  const renderVote = () => {
+    if (checking) {
+      return (
+        <div>
+          <h1>Checking your wallet...</h1>
+        </div>
+      );
+    } else {
+      if (hasClaimedNFT) {
+        return (
+          <h1>You can vote!</h1>
+        )
+      } else {
+        return (<h1>No!!</h1>)
+      }
+    }
+  }
 
   const container = `
   flex
