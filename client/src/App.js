@@ -185,13 +185,12 @@ const App = () => {
   p-7
   rounded-md
   shadow-xl
-  mb-6
+  mr-4
+  mb-4
   `
   const stickynoteContainer = `
-  md:flex-wrap
-  md:flex
-  md:space-y-0
-  space-y-4
+  md:grid
+  md:grid-cols-7
   md:justify-center
   overflow-auto
   `
