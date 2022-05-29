@@ -12,7 +12,10 @@ module.exports = {
         notepad: '#fe79c97',
         yellowbutton: '#fff458',
         buttontext: '#437db2'
-      }
+      },
+      fontFamily: {
+        smythe: ['Smythe, cursive']
+      },
     },
   },
   plugins: [],

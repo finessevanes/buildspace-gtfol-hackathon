@@ -153,6 +153,8 @@ const App = () => {
   bg-center
   flex-col 
   items-center
+  pl-4
+  pr-4
   `
   const stickyNote = `
   text-center
@@ -162,21 +164,20 @@ const App = () => {
   p-7
   rounded-md
   shadow-xl
+  mb-6
   `
   const stickynoteContainer = `
   md:flex-wrap
   md:flex
-  md:space-x-4
-  space-y-4 
-  md:p-3
+  md:space-y-0
+  space-y-4
   md:justify-center
   overflow-auto
   `
 
-
   return (
     <div className={container}>
-      <h1 className="text-yellowbutton mt-16 mb-16">The Great Wall of Ideas</h1>
+      <p className="text-7xl text-yellowbutton mt-16 mb-16 font-smythe">The Great Wall of Ideas</p>
       <div className={stickynoteContainer}>
         {allWaves.map((wave, index) => {
           return (
