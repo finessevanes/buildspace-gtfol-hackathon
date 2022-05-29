@@ -190,7 +190,7 @@ const App = () => {
   `
   const stickynoteContainer = `
   md:grid
-  md:grid-cols-7
+  md:grid-cols-5
   md:justify-center
   overflow-auto
   `
