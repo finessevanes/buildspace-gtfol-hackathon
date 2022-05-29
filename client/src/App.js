@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import "./App.css";
 import abi from '../src/utils/WavePortal.json';
+import { useAddress, useMetamask } from '@thirdweb-dev/react';
 
 const App = () => {
   const [currentAccount, setCurrentAccount] = useState("");
@@ -36,23 +37,8 @@ const App = () => {
     }
   }
 
-  const connectWallet = async () => {
-    try {
-      const { ethereum } = window;
-
-      if (!ethereum) {
-        alert("Get MetaMask!");
-        return;
-      }
-
-      const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-
-      console.log("Connected", accounts[0]);
-      setCurrentAccount(accounts[0]);
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  const address = useAddress();
+  const connectWallet = useMetamask();
 
   const wave = async () => {
     try {
@@ -170,7 +156,7 @@ const App = () => {
           Wave at Me
         </button>
         <input type='text' name="message" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
-        {!currentAccount && (
+        {!address && (
           <button className="waveButton" onClick={connectWallet}>
             Connect Wallet
           </button>
