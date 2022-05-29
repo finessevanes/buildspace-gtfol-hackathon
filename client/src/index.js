@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import { ThirdwebProvider, ChainId } from "@thirdweb-dev/react";
 
-const desiredChainId = ChainId.Rinkeby;
+const desiredChainId = ChainId.Polygon;
 
 ReactDOM.render(
   <ThirdwebProvider desiredChainId={desiredChainId}>
