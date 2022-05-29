@@ -186,8 +186,16 @@ const App = () => {
             </div>)
         })}
       </div>
+
+    <div class="flex justify-center">
+      <div class="block p-6 rounded-lg shadow-lg bg-white max-w-sm">
+        <p class="text-buttontext font-bold mb-4">
+        Do you an idea you want to share? Connect you wallet below! 
+        We want to be sure you are a Buildspace Almumi</p>
+      </div>
+    </div>
       <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={wave}>Make a post</button>
-        <input type='text' className="mb-6" name="message" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
+        <input type='text' className="mb-6" name="message" placeholder="Add your idea here" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
     </div>
   );
 }
