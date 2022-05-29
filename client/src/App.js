@@ -3,22 +3,29 @@ import { ethers } from "ethers";
 import "./App.css";
 import abi from '../src/utils/SlamPost.json';
 import { useAddress, useMetamask, useNetwork, useNetworkMismatch, useNFTCollection, useNFTDrop } from '@thirdweb-dev/react';
+import toast, { Toaster } from 'react-hot-toast';
 
 const App = () => {
   const [allPosts, setAllPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [checking, setChecking] = useState(true);
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
-  const [isOnRinkeby, setIsOnRinkeby] = useState(false);
   const contractAddress = "0x29Eb53F350892bDe058F8FC95EB19258A4ae9020";
   const contractABI = abi.abi;
+  const alertNetworkNotification = () => toast('Please log onto the Rinkeby Network', {
+    icon: `⛔️`,
+    duration: Infinity,
+    position: 'top-right',
+    style: {
+      backgroundColor: '#FECAD5',
+      border: '1px solid #FEA3B6',
+    },
+  });
 
-   // allow user to connect to app with metamask, and obtain address
+  // allow user to connect to app with metamask, and obtain address
   const address = useAddress();
   const connectWallet = useMetamask();
   const networkMismatched = useNetworkMismatch();
-
-  console.log()
 
   // Switch network
   const [, switchNetwork] = useNetwork();
@@ -58,20 +65,7 @@ const App = () => {
     }
   }
 
-  const checkIfRinkeby = async () => {
-    try {
-      const { ethereum } = window;
-      const chainId = await ethereum.request({ method: 'eth_chainId' });
-      if (chainId === '0x4'){
-        setIsOnRinkeby(true);
-      } else {
-        setIsOnRinkeby(false);
-      }
-      
-    } catch (error){
-      console.log(error);
-    }
-  }
+
 
   const getAllPosts = async () => {
     try {
@@ -165,7 +159,24 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    checkIfRinkeby();
+    const checkIfRinkeby = async () => {
+      try {
+        const { ethereum } = window;
+        ethereum.on('chainChanged', (chainId) => {
+          window.location.reload();
+        });
+        const chainId = await ethereum.request({ method: 'eth_chainId' });
+        if (chainId === '0x4') {
+          toast.dismiss(alertNetworkNotification);
+        } else {
+          alertNetworkNotification();
+        }
+  
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    checkIfRinkeby()
   }, [])
 
   const renderVote = () => {
@@ -220,7 +231,8 @@ const App = () => {
 
   return (
     <div className={container}>
-      <p className="text-7xl text-yellowbutton mt-16 mb-16 font-smythe">The Great Wall of Ideas</p>
+      <Toaster />
+      <p className="text-7xl text-yellowbutton mt-16 mb-16 font-smythe text-center">The Great Wall of Ideas</p>
       <div className={stickynoteContainer}>
         {allPosts.map((post, index) => {
           return (
@@ -230,20 +242,20 @@ const App = () => {
         })}
       </div>
 
-    <div class="flex justify-center">
-      <div class="block p-6 rounded-lg shadow-lg bg-white max-w-sm">
-        <p class="text-buttontext font-bold mb-4">
-        Do you an idea you want to share? Connect you wallet below! 
-        We want to be sure you are a Buildspace Alumni</p>
+      <div class="flex justify-center">
+        <div class="block p-6 rounded-lg shadow-lg bg-white max-w-sm">
+          <p class="text-buttontext font-bold mb-4">
+            Do you an idea you want to share? Connect you wallet below!
+            We want to be sure you are a Buildspace Alumni</p>
+        </div>
       </div>
-    </div>
       <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={post}>Make a post</button>
       <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
       {renderVote()}
       {!address && (
-          <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={connectWallet}>
-            Connect Wallet
-          </button>
+        <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={connectWallet}>
+          Connect Wallet
+        </button>
       )}
     </div>
   );
