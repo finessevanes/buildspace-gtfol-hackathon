@@ -5,11 +5,11 @@ import abi from '../src/utils/SlamPost.json';
 import { useAddress, useMetamask, useNetwork, useNetworkMismatch, useNFTCollection, useNFTDrop } from '@thirdweb-dev/react';
 
 const App = () => {
-  const [allWaves, setAllWaves] = useState([]);
-  const [newWave, setNewWave] = useState('');
+  const [allPosts, setAllPosts] = useState([]);
+  const [newPost, setNewPost] = useState('');
   const [checking, setChecking] = useState(true);
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
-  const contractAddress = "0xf7B2F9d4eC85e1E47E4097480C20CF9B65c88D71";
+  const contractAddress = "0x29Eb53F350892bDe058F8FC95EB19258A4ae9020";
   const contractABI = abi.abi;
 
    // allow user to connect to app with metamask, and obtain address
@@ -23,7 +23,7 @@ const App = () => {
   // Polygon - Buildspace NFT Contract address
   const nftCollection = useNFTCollection("0x3CD266509D127d0Eac42f4474F57D0526804b44e");
 
-  const wave = async () => {
+  const post = async () => {
     try {
       const { ethereum } = window;
 
@@ -32,21 +32,21 @@ const App = () => {
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
 
-        let count = await slamPostContract.getTotalWaves();
-        console.log("Retrieved total wave count...", count.toNumber());
+        let count = await slamPostContract.getTotalPosts();
+        console.log("Retrieved total post count...", count.toNumber());
 
         /*
-        * Execute the actual wave from your smart contract
+        * Execute the actual post from your smart contract
         */
-        const waveTxn = await slamPostContract.wave(newWave);
-        setNewWave('');
-        console.log("Mining...", waveTxn.hash);
+        const postTxn = await slamPostContract.post(newPost);
+        setNewPost('');
+        console.log("Mining...", postTxn.hash);
 
-        await waveTxn.wait();
-        console.log("Mined -- ", waveTxn.hash);
+        await postTxn.wait();
+        console.log("Mined -- ", postTxn.hash);
 
-        count = await slamPostContract.getTotalWaves();
-        console.log("Retrieved total wave count...", count.toNumber());
+        count = await slamPostContract.getTotalPosts();
+        console.log("Retrieved total post count...", count.toNumber());
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -55,26 +55,26 @@ const App = () => {
     }
   }
 
-  const getAllWaves = async () => {
+  const getAllPosts = async () => {
     try {
       const { ethereum } = window;
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
-        const waves = await slamPostContract.getAllWaves();
-        console.log('## WAVES ##', waves);
+        const posts = await slamPostContract.getAllPosts();
+        console.log('## POSTS ##', posts);
 
-        let wavesCleaned = [];
-        waves.forEach(wave => {
-          wavesCleaned.push({
-            address: wave.waver,
-            timestamp: new Date(wave.timestamp * 1000),
-            message: wave.message
+        let postsCleaned = [];
+        posts.forEach(post => {
+          postsCleaned.push({
+            address: post.poster,
+            timestamp: new Date(post.timestamp * 1000),
+            message: post.message
           });
         });
 
-        setAllWaves(wavesCleaned);
+        setAllPosts(postsCleaned);
       } else {
         console.log("Ethereum object doesn't exist!")
       }
@@ -85,9 +85,9 @@ const App = () => {
 
   useEffect(() => {
     let slamPostContract;
-    const onNewWave = (from, timestamp, message) => {
-      console.log("NewWave", from, timestamp, message);
-      setAllWaves(prevState => [
+    const onNewPost = (from, timestamp, message) => {
+      console.log("NewPost", from, timestamp, message);
+      setAllPosts(prevState => [
         ...prevState,
         {
           address: from,
@@ -102,12 +102,12 @@ const App = () => {
       const signer = provider.getSigner();
 
       slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
-      slamPostContract.on("NewWave", onNewWave);
+      slamPostContract.on("NewPost", onNewPost);
     }
 
     return () => {
       if (slamPostContract) {
-        slamPostContract.off("NewWave", onNewWave);
+        slamPostContract.off("NewPost", onNewPost);
       }
     };
   }, []);
@@ -143,7 +143,7 @@ const App = () => {
   ])
 
   useEffect(() => {
-    getAllWaves();
+    getAllPosts();
   }, []);
 
   const renderVote = () => {
@@ -200,10 +200,10 @@ const App = () => {
     <div className={container}>
       <p className="text-7xl text-yellowbutton mt-16 mb-16 font-smythe">The Great Wall of Ideas</p>
       <div className={stickynoteContainer}>
-        {allWaves.map((wave, index) => {
+        {allPosts.map((post, index) => {
           return (
             <div key={index} className={stickyNote}>
-              Message: {wave.message}
+              Message: {post.message}
             </div>)
         })}
       </div>
@@ -215,8 +215,8 @@ const App = () => {
         We want to be sure you are a Buildspace Alumni</p>
       </div>
     </div>
-      <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={wave}>Make a post</button>
-      <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
+      <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={post}>Make a post</button>
+      <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
       {renderVote()}
       {!address && (
           <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={connectWallet}>
