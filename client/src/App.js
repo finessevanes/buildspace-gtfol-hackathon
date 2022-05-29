@@ -150,13 +150,13 @@ const App = () => {
     if (checking) {
       return (
         <div>
-          <h1>Checking your wallet...</h1>
+          <h1 className="text-yellowbutton">Checking your wallet...</h1>
         </div>
       );
     } else {
       if (hasClaimedNFT) {
         return (
-          <h1>You can vote!</h1>
+          <h1 className="text-yellowbutton">You can vote!</h1>
         )
       } else {
         return (<h1>No!!</h1>)
@@ -197,7 +197,7 @@ const App = () => {
 
   return (
     <div className={container}>
-      <nav className="text-yellowbutton">This webside use Rinkeby testnet, make you're not connected on the mainet before posting!</nav>
+      <nav className="text-buttontext bg-yellowbutton w-full text-center font-bold">This webside use Rinkeby testnet, make you're not connected on the mainet before posting!</nav>
       <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe">The Great Wall of Ideas</p>
       <div className={stickynoteContainer}>
         {allPosts.map((post, index) => {
