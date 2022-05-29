@@ -10,16 +10,29 @@ contract WavePortal {
     /*
      * A little magic, Google what events are in Solidity!
      */
-    event NewWave(address indexed from, uint256 timestamp, string message);
+    event NewWave(
+        uint256 index,
+        address indexed from,
+        string message,
+        uint256 timestamp,
+        uint256 voteCount
+    );
 
     /*
      * I created a struct here named Wave.
      * A struct is basically a custom datatype where we can customize what we want to hold inside it.
      */
     struct Wave {
+        uint256 index;
         address waver; // The address of the user who waved.
         string message; // The message the user sent.
         uint256 timestamp; // The timestamp when the user waved.
+        uint256 voteCount;
+    }
+
+    struct Voter {
+        uint256 voted_on;
+        bool voted;
     }
 
     /*
@@ -27,6 +40,9 @@ contract WavePortal {
      * This is what lets me hold all the waves anyone ever sends to me!
      */
     Wave[] waves;
+
+    // A map to easily access Voter details
+    mapping(address => Voter) public voters;
 
     constructor() {
         console.log("I AM SMART CONTRACT. POG.");
@@ -38,19 +54,19 @@ contract WavePortal {
      * sends us from the frontend!
      */
     function wave(string memory _message) public {
-        totalWaves += 1;
         console.log("%s waved w/ message %s", msg.sender, _message);
 
         /*
          * This is where I actually store the wave data in the array.
          */
-        waves.push(Wave(msg.sender, _message, block.timestamp));
+        waves.push(Wave(totalWaves, msg.sender, _message, block.timestamp, 0));
 
         /*
          * I added some fanciness here, Google it and try to figure out what it is!
          * Let me know what you learn in #general-chill-chat
          */
-        emit NewWave(msg.sender, block.timestamp, _message);
+        emit NewWave(totalWaves, msg.sender, _message, block.timestamp, 0);
+        totalWaves += 1;
     }
 
     /*
@@ -66,5 +82,51 @@ contract WavePortal {
         // We'll also print it over in run.js as well.
         console.log("We have %d total waves!", totalWaves);
         return totalWaves;
+    }
+
+    function vote(uint256 ideaIndex) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Has voted.");
+        require(ideaIndex < waves.length, "IdeaIndex does not exist");
+        sender.voted = true;
+        sender.voted_on = ideaIndex;
+
+        for (uint i = 0; i < waves.length; i++) {
+            if (i == ideaIndex) {
+                waves[i].voteCount++;
+            }
+        }
+    }
+
+    function unvote(uint256 ideaIndex) public {
+        Wave memory userVoted = userVotedOn();
+
+        Voter storage sender = voters[msg.sender];
+        require(sender.voted, "Has not voted.");
+        require(sender.voted_on != userVoted.index);
+        require(ideaIndex < waves.length, "IdeaIndex does not exist");
+
+        sender.voted = false;
+        sender.voted_on = ideaIndex;
+
+        for (uint i = 0; i < waves.length; i++) {
+            if (i == ideaIndex) {
+                waves[i].voteCount--;
+            }
+        }
+    }
+
+    function userVotedOn() public view returns (Wave memory) {
+        require(voters[msg.sender].voted, "Has not voted");
+        Wave memory result;
+
+        for (uint i = 0; i < waves.length; i++) {
+            if (voters[msg.sender].voted_on == i) {
+                result = waves[i];
+                break;
+            }
+        }
+
+        return result;
     }
 }

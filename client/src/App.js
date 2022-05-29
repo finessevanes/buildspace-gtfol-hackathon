@@ -213,14 +213,21 @@ const App = () => {
             </div>)
         })}
       </div>
+
+    <div class="flex justify-center">
+      <div class="block p-6 rounded-lg shadow-lg bg-white max-w-sm">
+        <p class="text-buttontext font-bold mb-4">
+        Do you an idea you want to share? Connect you wallet below! 
+        We want to be sure you are a Buildspace Alumni</p>
+      </div>
+    </div>
       <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={wave}>Make a post</button>
       <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
       {renderVote()}
       {!address && (
-        <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4"
-          onClick={connectWallet}>
-          Connect
-        </button>
+          <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={connectWallet}>
+            Connect Wallet
+          </button>
       )}
     </div>
   );
