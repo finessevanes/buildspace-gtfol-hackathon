@@ -16,9 +16,13 @@ const App = () => {
   const networkMismatched = useNetworkMismatch();
   const [, switchNetwork] = useNetwork(); // Switch network
   // Polygon - Buildspace NFT Contract address
-  // const nftCollection = useNFTDrop("0x3CD266509D127d0Eac42f4474F57D0526804b44e");
-  // Rinkeby - thirdweb sample contract
-  const nftCollection = useNFTDrop("0xb1c42E0C4289E68f1C337Eb0Da6a38C4c9F3f58e");
+  const nftCollection = useNFTCollection("0x3CD266509D127d0Eac42f4474F57D0526804b44e");
+  // Rinkeby - thirdweb sample contract - both useNFTDrop or useNFTCollection works
+  // const nftCollection = useNFTDrop("0xb1c42E0C4289E68f1C337Eb0Da6a38C4c9F3f58e");
+  // spongebob rinkey 0x1086c1510290dc4528ee0cc5356ae116fb2607e8
+
+  const [checking, setChecking] = useState(true);
+  const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
 
   const wave = async () => {
     try {
@@ -82,6 +86,7 @@ const App = () => {
       console.log(error);
     }
   }
+
   useEffect(() => {
     let wavePortalContract;
 
@@ -118,19 +123,23 @@ const App = () => {
       return;
     }
 
+    // As we get errors if we owned Buildspace's NFT -> we can set it to true if there's an error
+    // And if wallet does not own Buildspace's NFT -> nfts.length == 0;
     const checkBalance = async () => {
-      console.log(address);
       try {
-        // const nfts = await nftCollection?.getOwned(address);
-        const nfts = await nftCollection?.getOwned("0xF11D6862e655b5F4e8f62E00471261D2f9c7E380");
-        console.log(nfts);
+        const nfts = await nftCollection.getOwned(address);
+        if (nfts.length === 0) {
+          setHasClaimedNFT(false);
+        }
+        setChecking(false);
       } catch (error) {
-        // setHasClaimedNFT(false);
-        // setChecking(false);
+        setHasClaimedNFT(true);
+        setChecking(false);
         console.error("Failed to get NFTs", error);
       }
     };
     checkBalance();
+    console.log("authority?", hasClaimedNFT)
   }, [
     address,
     connectWallet,
@@ -142,6 +151,16 @@ const App = () => {
   useEffect(() => {
     getAllWaves();
   }, []);
+
+  const renderVote = () => {
+    if (hasClaimedNFT) {
+      return (
+        <h1>You can vote!</h1>
+      )
+    } else {
+      return (<h1>No!!</h1>)
+    }
+  }
 
   // height: 428px
   // width: 926px;
@@ -190,7 +209,10 @@ const App = () => {
         })}
       </div>
       <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={wave}>Make a post</button>
-        <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
+      <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
+      {renderVote()}
+      {!address && (<button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={connectWallet}>Connect</button>)}
+
     </div>
   );
 }
