@@ -177,7 +177,7 @@ const App = () => {
 
   return (
     <div className={container}>
-      <p className="text-7xl text-yellowbutton mt-16 mb-16 font-smythe">The Great Wall of Ideas</p>
+      <p className="text-7xl text-yellowbutton mt-8 mb-8 font-smythe">The Great Wall of Ideas</p>
       <div className={stickynoteContainer}>
         {allWaves.map((wave, index) => {
           return (
@@ -188,8 +188,8 @@ const App = () => {
       </div>
 
     <div class="flex justify-center">
-      <div class="block p-6 rounded-lg shadow-lg bg-white max-w-sm">
-        <p class="text-buttontext font-bold mb-4">
+      <div class="block p-6 rounded-lg shadow-lg bg-white max-w-sm mt-6">
+        <p class="text-buttontext font-bold mt-4 mb-4">
         Do you an idea you want to share? Connect you wallet below! 
         We want to be sure you are a Buildspace Alumni</p>
       </div>
