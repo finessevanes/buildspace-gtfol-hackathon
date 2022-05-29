@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import "./App.css";
-import abi from '../src/utils/WavePortal.json';
+import abi from '../src/utils/SlamPost.json';
 import { useAddress, useMetamask, useNetwork, useNetworkMismatch, useNFTCollection, useNFTDrop } from '@thirdweb-dev/react';
 
 const App = () => {
@@ -30,22 +30,22 @@ const App = () => {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
-        const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
 
-        let count = await wavePortalContract.getTotalWaves();
+        let count = await slamPostContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
 
         /*
         * Execute the actual wave from your smart contract
         */
-        const waveTxn = await wavePortalContract.wave(newWave);
+        const waveTxn = await slamPostContract.wave(newWave);
         setNewWave('');
         console.log("Mining...", waveTxn.hash);
 
         await waveTxn.wait();
         console.log("Mined -- ", waveTxn.hash);
 
-        count = await wavePortalContract.getTotalWaves();
+        count = await slamPostContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
       } else {
         console.log("Ethereum object doesn't exist!");
@@ -61,8 +61,8 @@ const App = () => {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
-        const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
-        const waves = await wavePortalContract.getAllWaves();
+        const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const waves = await slamPostContract.getAllWaves();
         console.log('## WAVES ##', waves);
 
         let wavesCleaned = [];
@@ -84,7 +84,7 @@ const App = () => {
   }
 
   useEffect(() => {
-    let wavePortalContract;
+    let slamPostContract;
     const onNewWave = (from, timestamp, message) => {
       console.log("NewWave", from, timestamp, message);
       setAllWaves(prevState => [
@@ -101,13 +101,13 @@ const App = () => {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
 
-      wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
-      wavePortalContract.on("NewWave", onNewWave);
+      slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+      slamPostContract.on("NewWave", onNewWave);
     }
 
     return () => {
-      if (wavePortalContract) {
-        wavePortalContract.off("NewWave", onNewWave);
+      if (slamPostContract) {
+        slamPostContract.off("NewWave", onNewWave);
       }
     };
   }, []);
