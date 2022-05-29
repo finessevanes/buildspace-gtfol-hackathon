@@ -7,6 +7,8 @@ import { useAddress, useMetamask, useNetwork, useNetworkMismatch, useNFTCollecti
 const App = () => {
   const [allWaves, setAllWaves] = useState([]);
   const [newWave, setNewWave] = useState('');
+  const [checking, setChecking] = useState(true);
+  const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
   const contractAddress = "0xf7B2F9d4eC85e1E47E4097480C20CF9B65c88D71";
   const contractABI = abi.abi;
 
@@ -14,12 +16,12 @@ const App = () => {
   const address = useAddress();
   const connectWallet = useMetamask();
   const networkMismatched = useNetworkMismatch();
-  const [, switchNetwork] = useNetwork(); // Switch network
+
+  // Switch network
+  const [, switchNetwork] = useNetwork();
+
   // Polygon - Buildspace NFT Contract address
   const nftCollection = useNFTCollection("0x3CD266509D127d0Eac42f4474F57D0526804b44e");
-
-  const [checking, setChecking] = useState(true);
-  const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
 
   const wave = async () => {
     try {
@@ -54,17 +56,14 @@ const App = () => {
   }
 
   const getAllWaves = async () => {
-    const { ethereum } = window;
     try {
-
+      const { ethereum } = window;
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
-
         const waves = await wavePortalContract.getAllWaves();
         console.log('## WAVES ##', waves);
-
 
         let wavesCleaned = [];
         waves.forEach(wave => {
@@ -86,7 +85,6 @@ const App = () => {
 
   useEffect(() => {
     let wavePortalContract;
-
     const onNewWave = (from, timestamp, message) => {
       console.log("NewWave", from, timestamp, message);
       setAllWaves(prevState => [
@@ -115,7 +113,6 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    // If they don't have an connected wallet, return
     if (!address) {
       return;
     }
@@ -166,9 +163,6 @@ const App = () => {
       }
     }
   }
-
-  // height: 428px
-  // width: 926px;
 
   const container = `
   flex
