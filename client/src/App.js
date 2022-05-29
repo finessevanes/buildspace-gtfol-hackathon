@@ -28,7 +28,7 @@ const App = () => {
       if (accounts.length !== 0) {
         const account = accounts[0];
         console.log("Found an authorized account:", account);
-        setCurrentAccount(account);
+        setCurrentAccount(currentAccount);
       } else {
         console.log("No authorized account found")
       }
@@ -149,8 +149,10 @@ const App = () => {
   h-screen
   object-center
   bg-synthwave
-  bg-synthwave
   bg-cover
+  bg-center
+  flex-col 
+  items-center
   `
   const stickyNote = `
   text-center
@@ -161,27 +163,31 @@ const App = () => {
   rounded-md
   shadow-xl
   `
-  const whiteboard = `
-  p-5
-  rounded-md
-  bg-opacity-25
-
+  const stickynoteContainer = `
+  md:flex-wrap
+  md:flex
+  md:space-x-4
+  space-y-4 
+  md:p-3
+  md:justify-center
+  overflow-auto
   `
 
-  return (
 
+  return (
     <div className={container}>
-      <div className={whiteboard}>
+      <h1 className="text-yellowbutton mt-16 mb-16">The Great Wall of Ideas</h1>
+      <div className={stickynoteContainer}>
         {allWaves.map((wave, index) => {
           return (
             <div key={index} className={stickyNote}>
-              <div>Message: {wave.message}</div>
+              Message: {wave.message}
             </div>)
         })}
       </div>
+      <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={wave}>Make a post</button>
+        <input type='text' className="mb-6" name="message" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
     </div>
-
-
   );
 }
 

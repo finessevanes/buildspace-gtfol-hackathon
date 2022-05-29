@@ -9,7 +9,9 @@ module.exports = {
       },
       colors: {
         vaneo: '#ef4444',
-        notepad: '#fe79c97'
+        notepad: '#fe79c97',
+        yellowbutton: '#fff458',
+        buttontext: '#437db2'
       }
     },
   },
