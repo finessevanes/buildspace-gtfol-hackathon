@@ -11,7 +11,7 @@ contract WavePortal {
      * A little magic, Google what events are in Solidity!
      */
     event NewWave(
-        uint256 index;
+        uint256 index,
         address indexed from,
         string message,
         uint256 timestamp,
@@ -60,14 +60,13 @@ contract WavePortal {
          * This is where I actually store the wave data in the array.
          */
         waves.push(Wave(totalWaves, msg.sender, _message, block.timestamp, 0));
-        
+
         /*
          * I added some fanciness here, Google it and try to figure out what it is!
          * Let me know what you learn in #general-chill-chat
          */
-        emit NewWave(totalWaves, msg.sender, _message,  block.timestamp, 0);
+        emit NewWave(totalWaves, msg.sender, _message, block.timestamp, 0);
         totalWaves += 1;
-        
     }
 
     /*
@@ -104,9 +103,9 @@ contract WavePortal {
 
         Voter storage sender = voters[msg.sender];
         require(sender.voted, "Has not voted.");
-        require(voters.voted_on != userVoted.index);
+        require(sender.voted_on != userVoted.index);
         require(ideaIndex < waves.length, "IdeaIndex does not exist");
-        
+
         sender.voted = false;
         sender.voted_on = ideaIndex;
 
