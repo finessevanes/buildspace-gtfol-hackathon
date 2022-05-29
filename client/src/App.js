@@ -198,7 +198,8 @@ const App = () => {
 
   return (
     <div className={container}>
-      <p className="text-7xl text-yellowbutton mt-8 mb-8 font-smythe">The Great Wall of Ideas</p>
+      <nav className="text-yellowbutton">This webside use Rinkeby testnet, make you're not connected on the mainet before posting!</nav>
+      <p className="text-7xl text-yellowbutton mt-16 mb-16 font-smythe">The Great Wall of Ideas</p>
       <div className={stickynoteContainer}>
         {allWaves.map((wave, index) => {
           return (
