@@ -5,11 +5,11 @@ const main = async () => {
   console.log("Deploying contracts with account: ", deployer.address);
   console.log("Account balance: ", accountBalance.toString());
 
-  const waveContractFactory = await hre.ethers.getContractFactory("SlamPost");
-  const waveContract = await waveContractFactory.deploy();
-  await waveContract.deployed();
+  const postContractFactory = await hre.ethers.getContractFactory("SlamPost");
+  const postContract = await postContractFactory.deploy();
+  await postContract.deployed();
 
-  console.log("SlamPost address: ", waveContract.address);
+  console.log("SlamPost address: ", postContract.address);
 };
 
 const runMain = async () => {
