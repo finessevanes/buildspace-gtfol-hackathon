@@ -158,39 +158,34 @@ const App = () => {
   flex
   justify-center
   w-100
-  bg-red-400
-  align-center
-  flex-col
   `
   const header = `
   text-center
-  bg-emerald-200
-  `
-  const dataContainer = `
-  text-center
-  bg-blue-200
-  border-lime-600
-  bg-yellow-200
-  m-10
-  `
-  const footer = `
-  text-center
-  bg-blue-200
   `
 
   return (
     <div className={container}>
       <div className={header}>
-        <h1>pick up a marker</h1>
+      <button className="waveButton" onClick={wave}>
+          Wave at Me
+        </button>
+        <input type='text' name="message" value={newWave} onChange={(e) => setNewWave(e.target.value)} />
+        {!currentAccount && (
+          <button className="waveButton" onClick={connectWallet}>
+            Connect Wallet
+          </button>
+        )}
       </div>
-      <div className={dataContainer}>
-        <h1>Pick up a marker</h1>
-        <h1>Pick up a marker</h1>
-        <h1>Pick up a marker</h1>
-      </div>
-      <div className={footer}>
-        <h1>pick up a marker</h1>
-      </div>
+
+
+        {allWaves.map((wave, index) => {
+          return (
+            <div key={index} style={{ backgroundColor: "OldLace", marginTop: "16px", padding: "8px" }}>
+              <div>Address: {wave.address}</div>
+              <div>Time: {wave.timestamp.toString()}</div>
+              <div>Message: {wave.message}</div>
+            </div>)
+        })}
     </div>
   );
 }
