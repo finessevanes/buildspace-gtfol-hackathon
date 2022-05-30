@@ -216,7 +216,6 @@ const App = () => {
         if (hasClaimedNFT) {
           return (
             <div className="text-white">
-              <h1>You can vote!</h1>
               <button className={buttonStyle} onClick={handleVoteDetails}>I voted on..?</button>
             </div>
           )
@@ -301,13 +300,13 @@ const App = () => {
         <button className={buttonStyle} onClick={connectWallet}>
           Connect Wallet
         </button>
-      ) : (
-        <>
-          <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
-          <button className={buttonStyle} onClick={post}>
-            Make a post
-          </button>
-        </>
+      ) : hasClaimedNFT && (
+          <>
+            <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
+            <button className={buttonStyle} onClick={post}>
+              Make a post
+            </button>
+          </>
       )}
       {voting && (<h1 className="text-white">Voting...</h1>)}
       {renderVote()}
