@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import "./App.css";
 import abi from '../src/utils/SlamPost.json';
-import { container, stickyNote, stickynoteContainer, buttonStyle } from "./App.styles";
+import { container, buttonStyle } from "./App.styles";
+import Poems from "./components/Poems";
 import {
   useAddress, useMetamask, ChainId,
   useNetwork, useNetworkMismatch, useNFTCollection
@@ -220,17 +221,7 @@ const App = () => {
         <div className="rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end">{modifiedAddress}</div>
       )}
       <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe text-center">Slam Poetry</p>
-      <div className={stickynoteContainer}>
-        {allPosts.map((post, index) => {
-          return (
-            <div key={index} className={stickyNote}>
-              Message: {post.message}
-              <p className='cursor-pointer' onClick={handleUpVote}>🔥</p>
-              <p className='cursor-pointer' onClick={handleDownVote}>💩</p>
-            </div>
-          )
-        })}
-      </div>
+      <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} />
       <div class="flex justify-center">
         <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6 opacity-75 ">
           <p class="text-buttontext font-bold mt-4 mb-4">
