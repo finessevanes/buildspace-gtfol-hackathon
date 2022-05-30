@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import "./App.css";
 import abi from '../src/utils/SlamPost.json';
-import { useAddress, useMetamask, useNetwork, useNetworkMismatch, useNFTCollection, useNFTDrop } from '@thirdweb-dev/react';
-import { container, stickyNote, stickynoteContainer } from "./App.styles";
+import { container, stickyNote, stickynoteContainer, buttonStyle } from "./App.styles";
 import {
   useAddress, useMetamask, ChainId,
   useNetwork, useNetworkMismatch, useNFTCollection
