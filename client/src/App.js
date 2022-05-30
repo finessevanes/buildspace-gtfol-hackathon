@@ -177,19 +177,21 @@ const App = () => {
   }, [switchNetwork])
 
   const renderVote = () => {
-    if (checking) {
-      return (
-        <div>
-          <h1>Checking your wallet...</h1>
-        </div>
-      );
-    } else {
-      if (hasClaimedNFT) {
+    if (isOnRinkeby && address) {
+      if (checking) {
         return (
-          <h1>You can vote!</h1>
-        )
+          <div>
+            <h1>Checking your wallet...</h1>
+          </div>
+        );
       } else {
-        return (<h1>No!!</h1>)
+        if (hasClaimedNFT) {
+          return (
+            <h1>You can vote!</h1>
+          )
+        } else {
+          return (<h1>No!!</h1>)
+        }
       }
     }
   }
