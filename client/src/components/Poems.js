@@ -3,7 +3,8 @@ import { stickynoteContainer, stickyNote, votingContainer } from '../App.styles'
 
 const Poems = ({ allPosts, handleDownVote, handleUpVote, hasClaimedNFT, voteIndex }) => {
   return (
-    <div className={stickynoteContainer}>
+    <div className={`${stickynoteContainer} flex-wrap
+`}>
         {allPosts.map((post, index) => {
           return (
             <div className="flex flex-col">
