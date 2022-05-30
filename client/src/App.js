@@ -8,6 +8,7 @@ import {
   useAddress, useMetamask, ChainId,
   useNetwork, useNetworkMismatch, useNFTCollection
 } from '@thirdweb-dev/react';
+import { stickynoteContainer, stickyNote } from './App.styles'
 
 const App = () => {
   const rinkebyId = "0x4";
@@ -150,6 +151,7 @@ const App = () => {
     if (init) {
       checkBalance();
       setInit(false);
+      getAllPosts()
     }
   }, [
     init,
@@ -157,11 +159,16 @@ const App = () => {
     connectWallet,
     networkMismatched,
     nftCollection,
-    hasClaimedNFT
+    hasClaimedNFT,
   ])
 
   useEffect(() => {
-    getAllPosts();
+  
+    if (init) {
+      setInit(false);
+      getAllPosts()
+    }
+  //   getAllPosts();
   }, []);
 
   useEffect(() => {
@@ -227,7 +234,7 @@ const App = () => {
   }
 
   const handleUpVote = async (index) => {
-    console.log('upvoted');
+    console.log('upvoted', index);
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -240,12 +247,11 @@ const App = () => {
         setVoting(false);
         getAllPosts();
       } else {
-        setVoting(false);
         console.log("Ethereum object doesn't exist!")
       }
     } catch (error) {
       console.log(error);
-      alert(error.message)
+      // alert(error.message)
     }
     // modifyAddress(address);
   }
@@ -264,12 +270,11 @@ const App = () => {
         setVoting(false);
         getAllPosts();
       } else {
-        setVoting(false);
         console.log("Ethereum object doesn't exist!")
       }
     } catch (error) {
       console.log(error);
-      alert(error.message)
+      // alert(error.message)
     }
   }
 
@@ -279,7 +284,8 @@ const App = () => {
       <div className={`bg-yellowbutton w-full text-center text-buttontext ${isOnRinkeby? 'invisible' : 'visible'}`}>This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</div>
       <div className={`rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end ${address? 'invisible' : 'visible'}`}>{modifiedAddress}</div>
       <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe text-center">Slam Poetry</p>
-      <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} />
+      <Poems allPosts={allPosts} handleUpVote={handleUpVote} handleDownVote={handleDownVote}/>
+
       <div class="flex justify-center">
         <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6 opacity-75 ">
           <p class="text-buttontext font-bold mt-4 mb-4">
