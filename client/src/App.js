@@ -226,7 +226,9 @@ const App = () => {
     }
   }
 
-  const handleUpVote = async (index) => {
+  const handleUpVote = async (e) => {
+    e.preventDefault();
+    const index = e.target.value;
     console.log('upvoted', index);
     try {
       const { ethereum } = window;
@@ -246,10 +248,12 @@ const App = () => {
       console.log(error);
       // alert(error.message)
     }
-    // modifyAddress(address);
   }
 
-  const handleDownVote = async (index) => {
+  const handleDownVote = async (e) => {
+    e.preventDefault();
+    const index = e.target.value;
+    console.log(index)
     console.log('downvoted', index);
     try {
       const { ethereum } = window;
