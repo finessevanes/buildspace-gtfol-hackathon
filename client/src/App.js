@@ -23,7 +23,6 @@ const App = () => {
   const address = useAddress();
   const connectWallet = useMetamask();
   const networkMismatched = useNetworkMismatch();
-
   // Switch network
   const [, switchNetwork] = useNetwork();
 
@@ -67,7 +66,6 @@ const App = () => {
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
         const posts = await slamPostContract.getAllPosts();
-        console.log('## POSTS ##', posts);
 
         let postsCleaned = [];
         posts.forEach(post => {
@@ -124,17 +122,17 @@ const App = () => {
     // As we get errors if we owned Buildspace's NFT -> we can set it to true if there's an error
     // And if wallet does not own Buildspace's NFT -> nfts.length == 0;
     const checkBalance = async () => {
-        try {
-          const nfts = await nftCollection.getOwned(address);
-          if (nfts.length === 0) {
-            setHasClaimedNFT(false);
-          }
-          setChecking(false);
-        } catch (error) {
-          setHasClaimedNFT(true);
-          setChecking(false);
-          console.error("Failed to get NFTs", error);
+      try {
+        const nfts = await nftCollection.getOwned(address);
+        if (nfts.length === 0) {
+          setHasClaimedNFT(false);
         }
+        setChecking(false);
+      } catch (error) {
+        setHasClaimedNFT(true);
+        setChecking(false);
+        console.error("Failed to get NFTs", error);
+      }
     };
 
     if (init) {
@@ -168,7 +166,7 @@ const App = () => {
           setIsOnRinkeby(false)
           switchNetwork(ChainId.Rinkeby);
         }
-  
+
       } catch (error) {
         console.log(error);
       }
@@ -196,6 +194,14 @@ const App = () => {
     }
   }
 
+  const handleUpVote = () => {
+    console.log('upvoted');
+  }
+
+  const handleDownVote = () => {
+    console.log('downvoted');
+  }
+
   return (
     <div className={container}>
       {!isOnRinkeby && (
@@ -207,24 +213,29 @@ const App = () => {
           return (
             <div key={index} className={stickyNote}>
               Message: {post.message}
-            </div>)
+              <p className='cursor-pointer' onClick={handleUpVote}>🔥</p>
+              <p className='cursor-pointer' onClick={handleDownVote}>💩</p>
+            </div>
+          )
         })}
       </div>
-    <div class="flex justify-center">
-      <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6">
-        <p class="text-buttontext font-bold mt-4 mb-4">
-        Do you an idea you want to share? Connect you wallet below! 
-        We want to be sure you are a Buildspace Alumni</p>
+      <div class="flex justify-center">
+        <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6">
+          <p class="text-buttontext font-bold mt-4 mb-4">
+            Do you an idea you want to share? Connect you wallet below!
+            We want to be sure you are a Buildspace Alumni</p>
+        </div>
       </div>
-    </div>
-      <button className={buttonStyle} onClick={post}>Make a post</button>
       <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
       {renderVote()}
-      {!address && (
-          <button className={buttonStyle} onClick={connectWallet}>
-            Connect Wallet
-          </button>
-      )}
+      {!address ? (
+        <button className={buttonStyle} onClick={connectWallet}>
+          Connect Wallet
+        </button>
+      ) : (
+        <button className={buttonStyle} onClick={post}>
+          Make a post
+        </button>)}
     </div>
   );
 }
