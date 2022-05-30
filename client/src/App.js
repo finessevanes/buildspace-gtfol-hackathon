@@ -3,8 +3,15 @@ import { ethers } from "ethers";
 import "./App.css";
 import abi from '../src/utils/SlamPost.json';
 import { useAddress, useMetamask, useNetwork, useNetworkMismatch, useNFTCollection, useNFTDrop } from '@thirdweb-dev/react';
+import { container, stickyNote, stickynoteContainer } from "./App.styles";
+import {
+  useAddress, useMetamask, ChainId,
+  useNetwork, useNetworkMismatch, useNFTCollection
+} from '@thirdweb-dev/react';
 
 const App = () => {
+  const rinkebyId = "0x4";
+  const [init, setInit] = useState(true);
   const [allPosts, setAllPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [checking, setChecking] = useState(true);
@@ -36,9 +43,6 @@ const App = () => {
         let count = await slamPostContract.getTotalPosts();
         console.log("Retrieved total post count...", count.toNumber());
 
-        /*
-        * Execute the actual post from your smart contract
-        */
         const postTxn = await slamPostContract.post(newPost);
         setNewPost('');
         console.log("Mining...", postTxn.hash);
@@ -55,8 +59,6 @@ const App = () => {
       console.log(error);
     }
   }
-
-
 
   const getAllPosts = async () => {
     try {
@@ -115,28 +117,48 @@ const App = () => {
     };
   }, []);
 
+
+
   useEffect(() => {
     if (!address) {
       return;
     }
 
+    const checkNetwork = async () => {
+      const { ethereum } = window;
+      const chainId = await ethereum.request({ method: 'eth_chainId' });
+      if (chainId !== rinkebyId) {
+        console.log("diff chain")
+        switchNetwork(ChainId.Rinkeby);
+        ethereum.on('chainChanged', (_chainId) => {
+          window.location.reload();
+        })
+      } 
+    }
+
     // As we get errors if we owned Buildspace's NFT -> we can set it to true if there's an error
     // And if wallet does not own Buildspace's NFT -> nfts.length == 0;
     const checkBalance = async () => {
-      try {
-        const nfts = await nftCollection.getOwned(address);
-        if (nfts.length === 0) {
-          setHasClaimedNFT(false);
+        try {
+          const nfts = await nftCollection.getOwned(address);
+          if (nfts.length === 0) {
+            setHasClaimedNFT(false);
+          }
+          setChecking(false);
+        } catch (error) {
+          setHasClaimedNFT(true);
+          setChecking(false);
+          console.error("Failed to get NFTs", error);
         }
-        setChecking(false);
-      } catch (error) {
-        setHasClaimedNFT(true);
-        setChecking(false);
-        console.error("Failed to get NFTs", error);
-      }
     };
-    checkBalance();
+
+    if (init) {
+      checkNetwork();
+      checkBalance();
+      setInit(false);
+    }
   }, [
+    init,
     address,
     connectWallet,
     networkMismatched,
@@ -188,35 +210,6 @@ const App = () => {
     }
   }
 
-  const container = `
-  flex
-  w-screen
-  h-screen
-  object-center
-  bg-synthwave
-  bg-cover
-  bg-center
-  flex-col 
-  items-center
-  `
-  const stickyNote = `
-  text-center
-  h-40
-  w-44
-  bg-rose-400
-  p-7
-  rounded-md
-  shadow-xl
-  mr-4
-  mb-4
-  `
-  const stickynoteContainer = `
-  md:grid
-  md:grid-cols-5
-  md:justify-center
-  overflow-auto
-  `
-
   return (
     <div className={container}>
       {!isOnRinkeby && (
@@ -231,7 +224,6 @@ const App = () => {
             </div>)
         })}
       </div>
-
     <div class="flex justify-center">
       <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6">
         <p class="text-buttontext font-bold mt-4 mb-4">
@@ -239,11 +231,11 @@ const App = () => {
         We want to be sure you are a Buildspace Alumni</p>
       </div>
     </div>
-      <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={post}>Make a post</button>
+      <button className={buttonStyle} onClick={post}>Make a post</button>
       <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
       {renderVote()}
       {!address && (
-          <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={connectWallet}>
+          <button className={buttonStyle} onClick={connectWallet}>
             Connect Wallet
           </button>
       )}
