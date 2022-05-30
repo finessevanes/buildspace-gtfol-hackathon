@@ -14,7 +14,7 @@ const Poems = ({ allPosts, handleDownVote, handleUpVote, hasClaimedNFT, voteInde
               </div>
               <div>
               {hasClaimedNFT && 
-                (<div className="bg-red-400 rounded-xl m-4 flex place-content-evenly">
+                (<div className="bg-buttontext rounded-xl m-4 flex place-content-evenly">
                   <div className="flex">
                     {index.toString() === voteIndex ?
                       (
@@ -32,7 +32,7 @@ const Poems = ({ allPosts, handleDownVote, handleUpVote, hasClaimedNFT, voteInde
                         onClick={handleUpVote}>🍋</button>)
                   }
                   </div>
-                  <span className='text-yellow-900 text-4xl'>{post.voteCount}</span>
+                  <span className='text-yellowbutton text-4xl'>{post.voteCount}</span>
                 </div>
                 )
               }
