@@ -53,11 +53,14 @@ contract SlamPost {
         return totalPosts;
     }
 
-    function vote(uint256 ideaIndex) public {
+    function upVote(uint256 ideaIndex) public {
+        console.log('upVote ideaIndex');
+
         Voter storage sender = voters[msg.sender];
         require(!sender.voted, "Has voted.");
         require(ideaIndex < posts.length, "IdeaIndex does not exist");
         sender.voted = true;
+        console.log('sender.voted_on', sender.voted_on);
         sender.voted_on = ideaIndex;
 
         for (uint i = 0; i < posts.length; i++) {
@@ -67,12 +70,15 @@ contract SlamPost {
         }
     }
 
-    function unvote(uint256 ideaIndex) public {
+    function downVote(uint256 ideaIndex) public {
+        console.log('downVote ideaIndex');
+        
         Post memory userVoted = userVotedOn();
 
         Voter storage sender = voters[msg.sender];
         require(sender.voted, "Has not voted.");
-        require(sender.voted_on != userVoted.index);
+        console.log('sender.voted_on', sender.voted_on);
+        require(sender.voted_on == userVoted.index);
         require(ideaIndex < posts.length, "IdeaIndex does not exist");
 
         sender.voted = false;
