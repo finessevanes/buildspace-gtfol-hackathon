@@ -327,6 +327,11 @@ const App = () => {
       {loading && (<Spinner />)}
       {renderVote()}
       <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} hasClaimedNFT={hasClaimedNFT} voteIndex={voteIndex}/>
+      <footer className="text-center lg:text-left">
+  <div className="text-yellowbutton text-center p-4">
+  Built for Buildspace Hackathon by Dri, Vanessa, Vera, and Julia
+  </div>
+</footer>
     </div>
   );
 }
