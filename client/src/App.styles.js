@@ -27,6 +27,7 @@ export const stickynoteContainer = `
 md:flex
 md:justify-center
 md:w-full
+md:h-80
 overflow-auto
 p-3
 `
