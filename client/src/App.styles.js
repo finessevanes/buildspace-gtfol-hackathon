@@ -22,9 +22,9 @@ mb-4
 rotate-358
 `
 export const stickynoteContainer = `
-md:grid
-md:grid-cols-5
+md:flex
 md:justify-center
+md:w-full
 overflow-auto
 p-3
 `
