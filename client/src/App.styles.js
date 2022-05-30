@@ -31,6 +31,7 @@ md:w-full
 bg-buttonyellow
 overflow-auto
 p-3
+m-3
 `
 export const votingContainer = `
 md:flex
@@ -50,6 +51,6 @@ font-bold
 py-2
 px-4
 rounded-full
-mb-4
-mt-4
+mb-2
+mt-2
 `
