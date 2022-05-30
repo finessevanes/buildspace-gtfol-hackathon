@@ -14,7 +14,7 @@ const Poems = ({ allPosts, handleDownVote, handleUpVote, hasClaimedNFT, voteInde
               </div>
               <div>
               {hasClaimedNFT && 
-                (<div className="bg-buttontext rounded-xl m-4 flex place-content-evenly">
+                (<div className="bg-buttontext rounded-xl p-2 m-4 flex place-content-evenly">
                   <div className="flex">
                     {index.toString() === voteIndex ?
                       (
