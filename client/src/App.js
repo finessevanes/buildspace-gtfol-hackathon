@@ -136,7 +136,6 @@ const App = () => {
       try {
         modifyAddress(address)
         const nfts = await nftCollection.getOwned(address);
-        console.log("NFT", nfts);
         if (nfts.length === 0) {
           setHasClaimedNFT(false);
         }
@@ -150,6 +149,7 @@ const App = () => {
 
     if (init) {
       checkBalance();
+      getAllPosts();
       setInit(false);
     }
   }, [
@@ -279,7 +279,7 @@ const App = () => {
     <div className={container}>
 
       <div className={`bg-yellowbutton w-full text-center text-buttontext ${isOnRinkeby? 'invisible' : 'visible'}`}>This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</div>
-      <div className={`rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end ${address? 'invisible' : 'visible'}`}>{modifiedAddress}</div>
+      <div className={`rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end ${address? 'visible' : 'invisible'}`}>{modifiedAddress}</div>
       <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe text-center">Slam Poetry</p>
       <Poems allPosts={allPosts} handleUpVote={handleUpVote} handleDownVote={handleDownVote}/>
 
