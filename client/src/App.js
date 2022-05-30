@@ -16,7 +16,9 @@ const App = () => {
   const [init, setInit] = useState(true);
   const [allPosts, setAllPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
-  const [voting, setVoting] = useState(false);
+  const [voteIndex, setVoteIndex] = useState('');
+  const [voteDetails, setVoteDetails] = useState({});
+  const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
   const [isOnRinkeby, setIsOnRinkeby] = useState(true);
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
@@ -151,6 +153,7 @@ const App = () => {
     if (init) {
       checkBalance();
       getAllPosts();
+      handleVoteDetails();
       setInit(false);
     }
   }, [
@@ -195,8 +198,9 @@ const App = () => {
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
         const votedOn = await slamPostContract.userVotedOn();
-        // Help me with render the details in a div!!
-        alert("Voted On Poem #" + votedOn.index.toString() + " Message: " + votedOn.message);
+        setVoteIndex(votedOn.index.toString());
+        setVoteDetails(votedOn);
+        console.log(voteIndex, voteDetails);
       }
     } catch (error) {
       alert("You have not voted!");
@@ -213,15 +217,12 @@ const App = () => {
           </div>
         );
       } else {
-        if (hasClaimedNFT) {
+        if (hasClaimedNFT && voteIndex !== '') {
           return (
             <div className="text-white">
-              <h1>You can vote!</h1>
-              <button className={buttonStyle} onClick={handleVoteDetails}>I voted on..?</button>
+              {voteDetails.message}
             </div>
           )
-        } else {
-          return (<h1 className="text-white">No!!</h1>)
         }
       }
     }
@@ -238,24 +239,31 @@ const App = () => {
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
         const vote = await slamPostContract.upVote(index);
-        setVoting(true);
+        setLoading(true);
         await vote.wait()
-        setVoting(false);
+        setLoading(false);
+        setVoteIndex(index);
         getAllPosts();
       } else {
+        setLoading(false);
         console.log("Ethereum object doesn't exist!")
       }
     } catch (error) {
+      setLoading(false);
       console.log(error);
-      // alert(error.message)
     }
   }
 
   const handleDownVote = async (e) => {
     e.preventDefault();
     const index = e.target.value;
-    console.log(index)
+    console.log(voteIndex)
     console.log('downvoted', index);
+
+    if (voteIndex !== index) {
+      alert("Not allowed to downvote on ideas not voted by you!")
+      return
+    }
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -263,16 +271,17 @@ const App = () => {
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
         const vote = await slamPostContract.downVote(index, { gasLimit: 300000 });
-        setVoting(true);
+        setLoading(true);
         await vote.wait();
-        setVoting(false);
+        setLoading(false);
         getAllPosts();
       } else {
+        setLoading(false);
         console.log("Ethereum object doesn't exist!")
       }
     } catch (error) {
+      setLoading(false);
       console.log(error);
-      // alert(error.message)
     }
   }
 
@@ -281,7 +290,7 @@ const App = () => {
       <div className={`bg-yellowbutton w-full text-center text-buttontext ${isOnRinkeby ? 'invisible' : 'visible'}`}>This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</div>
       <div className={`rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end ${!address ? 'invisible' : 'visible'}`}>{modifiedAddress}</div>
       <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe text-center">Slam Poetry</p>
-      <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} />
+      <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} hasClaimedNFT={hasClaimedNFT}/>
       {address ?
         (<div class="flex justify-center">
           <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6 opacity-75 ">
@@ -299,20 +308,19 @@ const App = () => {
 
         )
       }
-      {renderVote()}
       {!address ? (
         <button className={buttonStyle} onClick={connectWallet}>
           Connect Wallet
         </button>
-      ) : (
-        <>
-          <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
-          <button className={buttonStyle} onClick={post}>
-            Make a post
-          </button>
-        </>
+      ) : hasClaimedNFT && (
+          <>
+            <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
+            <button className={buttonStyle} onClick={post}>
+              Make a post
+            </button>
+          </>
       )}
-      {voting && (<h1 className="text-white">Voting...</h1>)}
+      {loading && (<h1 className="text-white">Loading...</h1>)}
       {renderVote()}
     </div>
   );
