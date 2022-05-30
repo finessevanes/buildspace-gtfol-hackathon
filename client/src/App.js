@@ -214,12 +214,8 @@ const App = () => {
 
   return (
     <div className={container}>
-      {!isOnRinkeby && (
-        <nav className="bg-yellowbutton w-full text-center text-buttontext">This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</nav>
-      )}
-      { address && (
-        <div className="rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end">{modifiedAddress}</div>
-      )}
+      <div className={`bg-yellowbutton w-full text-center text-buttontext ${isOnRinkeby? 'invisible' : 'visible'}`}>This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</div>
+      <div className={`rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end ${address? 'invisible' : 'visible'}`}>{modifiedAddress}</div>
       <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe text-center">Slam Poetry</p>
       <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} />
       <div class="flex justify-center">
@@ -232,7 +228,7 @@ const App = () => {
       <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
       {renderVote()}
       {!address ? (
-        <button className={buttonStyle} onClick={connectWallet}>
+        <button className={buttonStyle} onClick={getAllPosts}>
           Connect Wallet
         </button>
       ) : (
