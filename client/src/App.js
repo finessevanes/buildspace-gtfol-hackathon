@@ -193,7 +193,7 @@ const App = () => {
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
         const votedOn = await slamPostContract.userVotedOn();
-        // Help me with render the details in a div ty!!
+        // Help me with render the details in a div!!
         alert("Voted On Poem #" + votedOn.index.toString() + " Message: " + votedOn.message);
       }
     } catch (error) {
@@ -233,8 +233,10 @@ const App = () => {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const vote = await slamPostContract.upVote(index);
         setVoting(true);
-        await slamPostContract.upVote(index);
+        await vote.wait()
+        setVoting(false);
         getAllPosts();
       } else {
         setVoting(false);
@@ -255,9 +257,10 @@ const App = () => {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
-        setVoting(true);
         const vote = await slamPostContract.downVote(index, { gasLimit: 300000 });
-        console.log(vote);
+        setVoting(true);
+        await vote.wait();
+        setVoting(false);
         getAllPosts();
       } else {
         setVoting(false);
@@ -300,8 +303,6 @@ const App = () => {
         </div>
       </div>
       <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
-      {voting && (<h1 className="text-white">Voting...</h1>)}
-      {renderVote()}
       {!address ? (
         <button className={buttonStyle} onClick={connectWallet}>
           Connect Wallet
@@ -310,6 +311,9 @@ const App = () => {
         <button className={buttonStyle} onClick={post}>
           Make a post
         </button>)}
+      {voting && (<h1 className="text-white">Voting...</h1>)}
+      {renderVote()}
+      
     </div>
   );
 }
