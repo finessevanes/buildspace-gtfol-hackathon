@@ -6,20 +6,22 @@ import { container, buttonStyle } from "./App.styles";
 import Poems from "./components/Poems";
 import {
   useAddress, useMetamask, ChainId,
-  useNetwork, useNetworkMismatch, useNFTCollection
+  useNetwork, useNFTCollection
 } from '@thirdweb-dev/react';
 import { ReactComponent as DownArrowLogo } from './assets/down-arrow.svg';
+
 
 const App = () => {
   const rinkebyId = "0x4";
   const [init, setInit] = useState(true);
   const [allPosts, setAllPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
+  const [voting, setVoting] = useState(false);
   const [checking, setChecking] = useState(true);
   const [isOnRinkeby, setIsOnRinkeby] = useState(true);
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
   const [modifiedAddress, setModifiedAddress] = useState('');
-  const contractAddress = "0x29Eb53F350892bDe058F8FC95EB19258A4ae9020";
+  const contractAddress = "0xD7d9a5fe4e8Af239169339AF04c376102924ba03";
   const contractABI = abi.abi;
 
   const modifyAddress = (address) => {
@@ -31,7 +33,6 @@ const App = () => {
   // allow user to connect to app with metamask, and obtain address
   const address = useAddress();
   const connectWallet = useMetamask();
-  const networkMismatched = useNetworkMismatch();
   // Switch network
   const [, switchNetwork] = useNetwork();
 
@@ -75,13 +76,14 @@ const App = () => {
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
         const posts = await slamPostContract.getAllPosts();
-
+        
         let postsCleaned = [];
         posts.forEach(post => {
           postsCleaned.push({
             address: post.poster,
             timestamp: new Date(post.timestamp * 1000),
-            message: post.message
+            message: post.message,
+            voteCount: post.voteCount.toString()
           });
         });
 
@@ -94,6 +96,7 @@ const App = () => {
     }
   }
 
+  
   useEffect(() => {
     let slamPostContract;
     const onNewPost = (from, timestamp, message) => {
@@ -147,15 +150,15 @@ const App = () => {
 
     if (init) {
       checkBalance();
+      getAllPosts();
       setInit(false);
     }
   }, [
     init,
     address,
     connectWallet,
-    networkMismatched,
     nftCollection,
-    hasClaimedNFT
+    hasClaimedNFT,
   ])
 
   useEffect(() => {
@@ -184,33 +187,93 @@ const App = () => {
     checkIfRinkeby()
   }, [switchNetwork])
 
+  const handleVoteDetails = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const votedOn = await slamPostContract.userVotedOn();
+        // Help me with render the details in a div!!
+        alert("Voted On Poem #" + votedOn.index.toString() + " Message: " + votedOn.message);
+      }
+    } catch (error) {
+      alert("You have not voted!");
+      console.log(error);
+    }
+  }
+
   const renderVote = () => {
     if (isOnRinkeby && address) {
       if (checking) {
         return (
           <div>
-            <h1>Checking your wallet...</h1>
+            <h1 className="text-white">Checking your wallet...</h1>
           </div>
         );
       } else {
         if (hasClaimedNFT) {
           return (
-            <h1>You can vote!</h1>
+            <div className="text-white">
+              <h1>You can vote!</h1>
+              <button className={buttonStyle} onClick={handleVoteDetails}>I voted on..?</button>
+            </div>
           )
         } else {
-          return (<h1>No!!</h1>)
+          return (<h1 className="text-white">No!!</h1>)
         }
       }
     }
   }
 
-  const handleUpVote = () => {
-    console.log('upvoted');
-    modifyAddress(address);
+  const handleUpVote = async (e) => {
+    e.preventDefault();
+    const index = e.target.value;
+    console.log('upvoted', index);
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const vote = await slamPostContract.upVote(index);
+        setVoting(true);
+        await vote.wait()
+        setVoting(false);
+        getAllPosts();
+      } else {
+        console.log("Ethereum object doesn't exist!")
+      }
+    } catch (error) {
+      console.log(error);
+      // alert(error.message)
+    }
   }
 
-  const handleDownVote = () => {
-    console.log('downvoted');
+  const handleDownVote = async (e) => {
+    e.preventDefault();
+    const index = e.target.value;
+    console.log(index)
+    console.log('downvoted', index);
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const vote = await slamPostContract.downVote(index, { gasLimit: 300000 });
+        setVoting(true);
+        await vote.wait();
+        setVoting(false);
+        getAllPosts();
+      } else {
+        console.log("Ethereum object doesn't exist!")
+      }
+    } catch (error) {
+      console.log(error);
+      // alert(error.message)
+    }
   }
 
   return (
@@ -236,7 +299,6 @@ const App = () => {
 
         )
       }
-
       {renderVote()}
       {!address ? (
         <button className={buttonStyle} onClick={connectWallet}>
@@ -250,6 +312,8 @@ const App = () => {
           </button>
         </>
       )}
+      {voting && (<h1 className="text-white">Voting...</h1>)}
+      {renderVote()}
     </div>
   );
 }
