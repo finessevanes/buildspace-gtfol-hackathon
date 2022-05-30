@@ -1,16 +1,23 @@
 import React from 'react'
 import { stickynoteContainer, stickyNote } from '../App.styles'
 
-const Poems = ({ allPosts, handleDownVote, handleUpVote }) => {
+const Poems = ({ allPosts, handleDownVote, handleUpVote, hasClaimedNFT }) => {
   return (
     <div className={stickynoteContainer}>
         {allPosts.map((post, index) => {
+          console.log(post)
           return (
             <div key={index} className={stickyNote}>
-              Message: {post.message}
-              <p>{post.voteCount}</p>
-              <button className='cursor-pointer text-6xl' value={index} onClick={handleUpVote}>🔥</button>
-              <button className='cursor-pointer text-6xl' value={index} onClick={handleDownVote}>💩</button>
+              <p className='mb-12'>
+              {post.message}
+              </p>
+              {hasClaimedNFT && 
+                (<div>
+                  <span className='text-4xl mr-12'>{post.voteCount}</span>
+                  <button className='cursor-pointer mr-1 text-3xl ' value={index} onClick={handleUpVote}>🔥</button>
+                  <button className='cursor-pointer text-3xl' value={index} onClick={handleDownVote}>💩</button>
+                </div>)
+              }
             </div>
           )
         })}
