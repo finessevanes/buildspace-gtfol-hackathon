@@ -13,11 +13,12 @@ const App = () => {
   const [allPosts, setAllPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [checking, setChecking] = useState(true);
+  const [isOnRinkeby, setIsOnRinkeby] = useState(true);
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
   const contractAddress = "0x29Eb53F350892bDe058F8FC95EB19258A4ae9020";
   const contractABI = abi.abi;
 
-   // allow user to connect to app with metamask, and obtain address
+  // allow user to connect to app with metamask, and obtain address
   const address = useAddress();
   const connectWallet = useMetamask();
   const networkMismatched = useNetworkMismatch();
@@ -59,6 +60,8 @@ const App = () => {
       console.log(error);
     }
   }
+
+
 
   const getAllPosts = async () => {
     try {
@@ -171,6 +174,27 @@ const App = () => {
     getAllPosts();
   }, []);
 
+  useEffect(() => {
+    const checkIfRinkeby = async () => {
+      try {
+        const { ethereum } = window;
+        ethereum.on('chainChanged', (chainId) => {
+          window.location.reload();
+        });
+        const chainId = await ethereum.request({ method: 'eth_chainId' });
+        if (chainId === '0x4') {
+          setIsOnRinkeby(true)
+        } else {
+          setIsOnRinkeby(false)
+        }
+  
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    checkIfRinkeby()
+  }, [])
+
   const renderVote = () => {
     if (checking) {
       return (
@@ -199,8 +223,6 @@ const App = () => {
   bg-center
   flex-col 
   items-center
-  pl-4
-  pr-4
   `
   const stickyNote = `
   text-center
@@ -222,7 +244,9 @@ const App = () => {
 
   return (
     <div className={container}>
-      <nav className="text-yellowbutton">This webside use Rinkeby testnet, make you're not connected on the mainet before posting!</nav>
+      {!isOnRinkeby && (
+        <nav className="bg-yellowbutton w-full text-center text-buttontext">This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</nav>
+      )}
       <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe">The Great Wall of Ideas</p>
       <div className={stickynoteContainer}>
         {allPosts.map((post, index) => {

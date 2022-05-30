@@ -1,10 +1,9 @@
-/node_modules
 .env
 coverage
 coverage.json
 typechain
+node_modules/
 
 #Hardhat files
 cache
 artifacts
-node_modules/
