@@ -8,6 +8,7 @@ import {
   useAddress, useMetamask, ChainId,
   useNetwork, useNetworkMismatch, useNFTCollection
 } from '@thirdweb-dev/react';
+import { ReactComponent as DownArrowLogo } from './assets/down-arrow.svg';
 
 const App = () => {
   const rinkebyId = "0x4";
@@ -214,27 +215,41 @@ const App = () => {
 
   return (
     <div className={container}>
-      <div className={`bg-yellowbutton w-full text-center text-buttontext ${isOnRinkeby? 'invisible' : 'visible'}`}>This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</div>
-      <div className={`rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end ${address? 'invisible' : 'visible'}`}>{modifiedAddress}</div>
+      <div className={`bg-yellowbutton w-full text-center text-buttontext ${isOnRinkeby ? 'invisible' : 'visible'}`}>This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</div>
+      <div className={`rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end ${!address ? 'invisible' : 'visible'}`}>{modifiedAddress}</div>
       <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe text-center">Slam Poetry</p>
       <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} />
-      <div class="flex justify-center">
-        <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6 opacity-75 ">
-          <p class="text-buttontext font-bold mt-4 mb-4">
-            Are you a poet and didn't even know it? Share your poetry skills and see how the community votes
-          </p>
-        </div>
-      </div>
-      <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
+      {address ?
+        (<div class="flex justify-center">
+          <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6 opacity-75 ">
+            <p class="text-buttontext font-bold mt-4 mb-4">
+              Are you a poet and didn't even know it? Share your poetry skills and see how the community votes
+            </p>
+          </div>
+        </div>)
+        : (
+          <>
+            <DownArrowLogo />
+            <DownArrowLogo />
+            <DownArrowLogo />
+          </>
+
+        )
+      }
+
       {renderVote()}
       {!address ? (
-        <button className={buttonStyle} onClick={getAllPosts}>
+        <button className={buttonStyle} onClick={connectWallet}>
           Connect Wallet
         </button>
       ) : (
-        <button className={buttonStyle} onClick={post}>
-          Make a post
-        </button>)}
+        <>
+          <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
+          <button className={buttonStyle} onClick={post}>
+            Make a post
+          </button>
+        </>
+      )}
     </div>
   );
 }
