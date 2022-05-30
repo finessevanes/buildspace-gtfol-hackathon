@@ -57,10 +57,11 @@ const App = () => {
         const postTxn = await slamPostContract.post(newPost);
         setNewPost('');
         console.log("Mining...", postTxn.hash);
-
+        setLoading(true);
         await postTxn.wait();
         console.log("Mined -- ", postTxn.hash);
-
+        setLoading(false);
+        getAllPosts();
         count = await slamPostContract.getTotalPosts();
         console.log("Retrieved total post count...", count.toNumber());
       } else {
@@ -204,7 +205,6 @@ const App = () => {
         console.log(voteIndex, voteDetails);
       }
     } catch (error) {
-      alert("You have not voted!");
       console.log(error);
     }
   }
@@ -215,16 +215,12 @@ const App = () => {
         return (
             <Spinner/>
         );
-      } else {
-        if (hasClaimedNFT && voteIndex !== '') {
-          return (
-            <div className="text-white">
-              {voteDetails.message}
-            </div>
-          )
-        }
       }
     }
+    return (
+      <div>
+      </div>
+    )
   }
 
   const handleUpVote = async (e) => {
@@ -297,8 +293,8 @@ const App = () => {
     <div className={container}>
       <div className={`bg-yellowbutton w-full text-center text-buttontext ${isOnRinkeby ? 'invisible' : 'visible'}`}>This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</div>
       <div className={`rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end ${!address ? 'invisible' : 'visible'}`}>{modifiedAddress}</div>
-      <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe text-center">Slam Poetry</p>
-      <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} hasClaimedNFT={hasClaimedNFT} voteIndex={voteIndex}/>
+      <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe text-center animate-bounce">Slam Poetry</p>
+      
       {address ?
         (<div class="flex justify-center">
           <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6 opacity-75 ">
@@ -322,7 +318,7 @@ const App = () => {
         </button>
       ) : hasClaimedNFT && (
           <>
-            <input type='text' className="my-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
+            <input type='text' className="my-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" maxlength="100" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
             <button className={buttonStyle} onClick={post}>
               Make a post
             </button>
@@ -330,6 +326,7 @@ const App = () => {
       )}
       {loading && (<Spinner />)}
       {renderVote()}
+      <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} hasClaimedNFT={hasClaimedNFT} voteIndex={voteIndex}/>
     </div>
   );
 }
