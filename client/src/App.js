@@ -13,6 +13,7 @@ const App = () => {
   const [init, setInit] = useState(true);
   const [allPosts, setAllPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
+  const [voting, setVoting] = useState(false);
   const [checking, setChecking] = useState(true);
   const [isOnRinkeby, setIsOnRinkeby] = useState(true);
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
@@ -193,9 +194,10 @@ const App = () => {
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
         const votedOn = await slamPostContract.userVotedOn();
         // Help me with render the details in a div ty!!
-        alert("Voted On Idea #" + votedOn.index.toString() + " Message: " + votedOn.message);
+        alert("Voted On Poem #" + votedOn.index.toString() + " Message: " + votedOn.message);
       }
     } catch (error) {
+      alert("You have not voted!");
       console.log(error);
     }
   }
@@ -231,20 +233,11 @@ const App = () => {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
-        const posts = await slamPostContract.upVote(index);
-        
-        let postsCleaned = [];
-        posts.forEach(post => {
-          postsCleaned.push({
-            address: post.poster,
-            timestamp: new Date(post.timestamp * 1000),
-            message: post.message,
-            voteCount: post.voteCount.toString()
-          });
-        });
-
-        setAllPosts(postsCleaned);
+        setVoting(true);
+        await slamPostContract.upVote(index);
+        getAllPosts();
       } else {
+        setVoting(false);
         console.log("Ethereum object doesn't exist!")
       }
     } catch (error) {
@@ -262,10 +255,12 @@ const App = () => {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+        setVoting(true);
         const vote = await slamPostContract.downVote(index, { gasLimit: 300000 });
-        
         console.log(vote);
+        getAllPosts();
       } else {
+        setVoting(false);
         console.log("Ethereum object doesn't exist!")
       }
     } catch (error) {
@@ -287,7 +282,7 @@ const App = () => {
         {allPosts.map((post, index) => {
           return (
             <div key={index} className={stickyNote}>
-              Message: {post.message}
+              <p>{post.message}</p>
               <p>Votes: {post.voteCount}</p>
               {hasClaimedNFT && (<div>
                 <span className='cursor-pointer' onClick={() => handleUpVote(index)}>🔥</span>
@@ -305,6 +300,7 @@ const App = () => {
         </div>
       </div>
       <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
+      {voting && (<h1 className="text-white">Voting...</h1>)}
       {renderVote()}
       {!address ? (
         <button className={buttonStyle} onClick={connectWallet}>
