@@ -9,8 +9,8 @@ const Poems = ({ allPosts, handleDownVote, handleUpVote }) => {
             <div key={index} className={stickyNote}>
               Message: {post.message}
               <p>{post.voteCount}</p>
-              <p className='cursor-pointer' onClick={() => handleUpVote}>🔥</p>
-              <p className='cursor-pointer' onClick={() => handleDownVote}>💩</p>
+              <p className='cursor-pointer' onClick={() => handleUpVote(index)}>🔥</p>
+              <p className='cursor-pointer' onClick={() => handleDownVote(index)}>💩</p>
             </div>
           )
         })}

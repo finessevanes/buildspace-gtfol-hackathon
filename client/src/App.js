@@ -6,9 +6,9 @@ import { container, buttonStyle } from "./App.styles";
 import Poems from "./components/Poems";
 import {
   useAddress, useMetamask, ChainId,
-  useNetwork, useNetworkMismatch, useNFTCollection
+  useNetwork, useNFTCollection
 } from '@thirdweb-dev/react';
-import { stickynoteContainer, stickyNote } from './App.styles'
+
 
 const App = () => {
   const rinkebyId = "0x4";
@@ -32,7 +32,6 @@ const App = () => {
   // allow user to connect to app with metamask, and obtain address
   const address = useAddress();
   const connectWallet = useMetamask();
-  const networkMismatched = useNetworkMismatch();
   // Switch network
   const [, switchNetwork] = useNetwork();
 
@@ -137,6 +136,7 @@ const App = () => {
       try {
         modifyAddress(address)
         const nfts = await nftCollection.getOwned(address);
+        console.log("NFT", nfts);
         if (nfts.length === 0) {
           setHasClaimedNFT(false);
         }
@@ -151,24 +151,17 @@ const App = () => {
     if (init) {
       checkBalance();
       setInit(false);
-      getAllPosts()
     }
   }, [
     init,
     address,
     connectWallet,
-    networkMismatched,
     nftCollection,
     hasClaimedNFT,
   ])
 
   useEffect(() => {
-  
-    if (init) {
-      setInit(false);
-      getAllPosts()
-    }
-  //   getAllPosts();
+    getAllPosts();
   }, []);
 
   useEffect(() => {
@@ -295,7 +288,7 @@ const App = () => {
       </div>
       <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
       {!address ? (
-        <button className={buttonStyle} onClick={getAllPosts}>
+        <button className={buttonStyle} onClick={connectWallet}>
           Connect Wallet
         </button>
       ) : (
