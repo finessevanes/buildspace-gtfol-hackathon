@@ -13,9 +13,10 @@ export const stickyNote = `
 text-center
 h-52
 w-64
-bg-note
-bg-cover
-p-10
+bg-notepad
+bg-origin-border
+bg-center
+p-4
 rounded-md
 shadow-xl
 mr-4
@@ -24,6 +25,14 @@ rotate-358
 overflow-auto
 `
 export const stickynoteContainer = `
+md:flex
+md:justify-center
+md:w-full
+bg-buttonyellow
+overflow-auto
+p-3
+`
+export const votingContainer = `
 md:flex
 md:justify-center
 md:w-full
@@ -42,4 +51,5 @@ py-2
 px-4
 rounded-full
 mb-4
-mt-4`
+mt-4
+`
