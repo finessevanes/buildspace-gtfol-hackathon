@@ -4,6 +4,7 @@ import "./App.css";
 import abi from '../src/utils/SlamPost.json';
 import { container, buttonStyle } from "./App.styles";
 import Poems from "./components/Poems";
+import Spinner from "./components/Spinner"
 import {
   useAddress, useMetamask, ChainId,
   useNetwork, useNFTCollection
@@ -212,9 +213,7 @@ const App = () => {
     if (isOnRinkeby && address) {
       if (checking) {
         return (
-          <div>
-            <h1 className="text-white">Checking your wallet...</h1>
-          </div>
+            <Spinner/>
         );
       } else {
         if (hasClaimedNFT && voteIndex !== '') {
@@ -231,7 +230,11 @@ const App = () => {
   const handleUpVote = async (e) => {
     e.preventDefault();
     const index = e.target.value;
-    console.log('upvoted', index);
+    if (voteIndex !== '') {
+      alert("You have voted!")
+      return
+    }
+
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -242,6 +245,8 @@ const App = () => {
         setLoading(true);
         await vote.wait()
         setLoading(false);
+
+        // set Vote Index
         setVoteIndex(index);
         getAllPosts();
       } else {
@@ -257,8 +262,6 @@ const App = () => {
   const handleDownVote = async (e) => {
     e.preventDefault();
     const index = e.target.value;
-    console.log(voteIndex)
-    console.log('downvoted', index);
 
     if (voteIndex !== index) {
       alert("Not allowed to downvote on ideas not voted by you!")
@@ -274,6 +277,11 @@ const App = () => {
         setLoading(true);
         await vote.wait();
         setLoading(false);
+
+        // reset Vote Index and Vote Details
+        setVoteIndex('');
+        setVoteDetails({})
+
         getAllPosts();
       } else {
         setLoading(false);
@@ -290,7 +298,7 @@ const App = () => {
       <div className={`bg-yellowbutton w-full text-center text-buttontext ${isOnRinkeby ? 'invisible' : 'visible'}`}>This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</div>
       <div className={`rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end ${!address ? 'invisible' : 'visible'}`}>{modifiedAddress}</div>
       <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe text-center">Slam Poetry</p>
-      <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} hasClaimedNFT={hasClaimedNFT}/>
+      <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} hasClaimedNFT={hasClaimedNFT} voteIndex={voteIndex}/>
       {address ?
         (<div class="flex justify-center">
           <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6 opacity-75 ">
@@ -320,7 +328,7 @@ const App = () => {
             </button>
           </>
       )}
-      {loading && (<h1 className="text-white">Loading...</h1>)}
+      {loading && (<Spinner />)}
       {renderVote()}
     </div>
   );
