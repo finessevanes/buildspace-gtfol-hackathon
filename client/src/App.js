@@ -57,10 +57,11 @@ const App = () => {
         const postTxn = await slamPostContract.post(newPost);
         setNewPost('');
         console.log("Mining...", postTxn.hash);
-
+        setLoading(true);
         await postTxn.wait();
         console.log("Mined -- ", postTxn.hash);
-
+        setLoading(false);
+        getAllPosts();
         count = await slamPostContract.getTotalPosts();
         console.log("Retrieved total post count...", count.toNumber());
       } else {
@@ -204,7 +205,6 @@ const App = () => {
         console.log(voteIndex, voteDetails);
       }
     } catch (error) {
-      alert("You have not voted!");
       console.log(error);
     }
   }
@@ -215,16 +215,12 @@ const App = () => {
         return (
             <Spinner/>
         );
-      } else {
-        if (hasClaimedNFT && voteIndex !== '') {
-          return (
-            <div className="text-white">
-              {voteDetails.message}
-            </div>
-          )
-        }
       }
     }
+    return (
+      <div>
+      </div>
+    )
   }
 
   const handleUpVote = async (e) => {
@@ -322,7 +318,7 @@ const App = () => {
         </button>
       ) : hasClaimedNFT && (
           <>
-            <input type='text' className="my-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
+            <input type='text' className="my-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" maxlength="100" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
             <button className={buttonStyle} onClick={post}>
               Make a post
             </button>
