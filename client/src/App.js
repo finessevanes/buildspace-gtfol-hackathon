@@ -17,7 +17,7 @@ const App = () => {
   const [isOnRinkeby, setIsOnRinkeby] = useState(true);
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
   const [modifiedAddress, setModifiedAddress] = useState('');
-  const contractAddress = "0x29Eb53F350892bDe058F8FC95EB19258A4ae9020";
+  const contractAddress = "0xD7d9a5fe4e8Af239169339AF04c376102924ba03";
   const contractABI = abi.abi;
 
   const modifyAddress = (address) => {
