@@ -120,23 +120,9 @@ const App = () => {
     };
   }, []);
 
-
-
   useEffect(() => {
     if (!address) {
       return;
-    }
-
-    const checkNetwork = async () => {
-      const { ethereum } = window;
-      const chainId = await ethereum.request({ method: 'eth_chainId' });
-      if (chainId !== rinkebyId) {
-        console.log("diff chain")
-        switchNetwork(ChainId.Rinkeby);
-        ethereum.on('chainChanged', (_chainId) => {
-          window.location.reload();
-        })
-      } 
     }
 
     // As we get errors if we owned Buildspace's NFT -> we can set it to true if there's an error
@@ -156,7 +142,6 @@ const App = () => {
     };
 
     if (init) {
-      checkNetwork();
       checkBalance();
       setInit(false);
     }
@@ -165,7 +150,6 @@ const App = () => {
     address,
     connectWallet,
     networkMismatched,
-    switchNetwork,
     nftCollection,
     hasClaimedNFT
   ])
@@ -182,10 +166,11 @@ const App = () => {
           window.location.reload();
         });
         const chainId = await ethereum.request({ method: 'eth_chainId' });
-        if (chainId === '0x4') {
+        if (chainId === rinkebyId) {
           setIsOnRinkeby(true)
         } else {
           setIsOnRinkeby(false)
+          switchNetwork(ChainId.Rinkeby);
         }
   
       } catch (error) {
@@ -193,7 +178,7 @@ const App = () => {
       }
     }
     checkIfRinkeby()
-  }, [])
+  }, [switchNetwork])
 
   const renderVote = () => {
     if (checking) {
