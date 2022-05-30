@@ -16,6 +16,9 @@ module.exports = {
       fontFamily: {
         smythe: ['Smythe, cursive']
       },
+      rotate: {
+        '358': '358deg',
+      }
     },
   },
   plugins: [],
