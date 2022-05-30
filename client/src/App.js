@@ -198,8 +198,6 @@ const App = () => {
   bg-center
   flex-col 
   items-center
-  pl-4
-  pr-4
   `
   const stickyNote = `
   text-center
@@ -222,7 +220,10 @@ const App = () => {
 
   return (
     <div className={container}>
-      <p className="text-7xl text-yellowbutton mt-16 mb-16 font-smythe text-center">The Great Wall of Ideas</p>
+      {!isOnRinkeby && (
+        <nav className="bg-yellowbutton w-full text-center text-buttontext">This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</nav>
+      )}
+      <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe">The Great Wall of Ideas</p>
       <div className={stickynoteContainer}>
         {allPosts.map((post, index) => {
           return (
@@ -232,20 +233,20 @@ const App = () => {
         })}
       </div>
 
-      <div class="flex justify-center">
-        <div class="block p-6 rounded-lg shadow-lg bg-white max-w-sm">
-          <p class="text-buttontext font-bold mb-4">
-            Do you an idea you want to share? Connect you wallet below!
-            We want to be sure you are a Buildspace Alumni</p>
-        </div>
+    <div class="flex justify-center">
+      <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6">
+        <p class="text-buttontext font-bold mt-4 mb-4">
+        Do you an idea you want to share? Connect you wallet below! 
+        We want to be sure you are a Buildspace Alumni</p>
       </div>
+    </div>
       <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={post}>Make a post</button>
       <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
       {renderVote()}
       {!address && (
-        <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={connectWallet}>
-          Connect Wallet
-        </button>
+          <button className="bg-yellowbutton hover:bg-yellow-100 text-buttontext font-bold py-2 px-4 rounded-full mb-4 mt-4" onClick={connectWallet}>
+            Connect Wallet
+          </button>
       )}
     </div>
   );
