@@ -231,7 +231,7 @@ const App = () => {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
-        const posts = await slamPostContract.vote(index);
+        const posts = await slamPostContract.upVote(index);
         
         let postsCleaned = [];
         posts.forEach(post => {
@@ -262,7 +262,7 @@ const App = () => {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
-        const vote = await slamPostContract.unvote(index, { gasLimit: 300000 });
+        const vote = await slamPostContract.downVote(index, { gasLimit: 300000 });
         
         console.log(vote);
       } else {
