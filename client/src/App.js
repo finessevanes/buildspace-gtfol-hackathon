@@ -73,13 +73,14 @@ const App = () => {
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
         const posts = await slamPostContract.getAllPosts();
-
+        
         let postsCleaned = [];
         posts.forEach(post => {
           postsCleaned.push({
             address: post.poster,
             timestamp: new Date(post.timestamp * 1000),
-            message: post.message
+            message: post.message,
+            voteCount: post.voteCount.toString()
           });
         });
 
@@ -92,6 +93,7 @@ const App = () => {
     }
   }
 
+  
   useEffect(() => {
     let slamPostContract;
     const onNewPost = (from, timestamp, message) => {
@@ -182,33 +184,94 @@ const App = () => {
     checkIfRinkeby()
   }, [switchNetwork])
 
+  const handleVoteDetails = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const votedOn = await slamPostContract.userVotedOn();
+        // Help me with render the details in a div ty!!
+        alert("Voted On Idea #" + votedOn.index.toString() + " Message: " + votedOn.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const renderVote = () => {
     if (isOnRinkeby && address) {
       if (checking) {
         return (
           <div>
-            <h1>Checking your wallet...</h1>
+            <h1 className="text-white">Checking your wallet...</h1>
           </div>
         );
       } else {
         if (hasClaimedNFT) {
           return (
-            <h1>You can vote!</h1>
+            <div className="text-white">
+              <h1>You can vote!</h1>
+              <button className={buttonStyle} onClick={handleVoteDetails}>I voted on..?</button>
+            </div>
           )
         } else {
-          return (<h1>No!!</h1>)
+          return (<h1 className="text-white">No!!</h1>)
         }
       }
     }
   }
 
-  const handleUpVote = () => {
+  const handleUpVote = async (index) => {
     console.log('upvoted');
-    modifyAddress(address);
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const posts = await slamPostContract.vote(index);
+        
+        let postsCleaned = [];
+        posts.forEach(post => {
+          postsCleaned.push({
+            address: post.poster,
+            timestamp: new Date(post.timestamp * 1000),
+            message: post.message,
+            voteCount: post.voteCount.toString()
+          });
+        });
+
+        setAllPosts(postsCleaned);
+      } else {
+        console.log("Ethereum object doesn't exist!")
+      }
+    } catch (error) {
+      console.log(error);
+      alert(error.message)
+    }
+    // modifyAddress(address);
   }
 
-  const handleDownVote = () => {
-    console.log('downvoted');
+  const handleDownVote = async (index) => {
+    console.log('downvoted', index);
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const vote = await slamPostContract.unvote(index, { gasLimit: 300000 });
+        
+        console.log(vote);
+      } else {
+        console.log("Ethereum object doesn't exist!")
+      }
+    } catch (error) {
+      console.log(error);
+      alert(error.message)
+    }
   }
 
   return (
@@ -225,8 +288,11 @@ const App = () => {
           return (
             <div key={index} className={stickyNote}>
               Message: {post.message}
-              <p className='cursor-pointer' onClick={handleUpVote}>🔥</p>
-              <p className='cursor-pointer' onClick={handleDownVote}>💩</p>
+              <p>Votes: {post.voteCount}</p>
+              {hasClaimedNFT && (<div>
+                <span className='cursor-pointer' onClick={() => handleUpVote(index)}>🔥</span>
+                <span className='cursor-pointer' onClick={() => handleDownVote(index)}>💩</span>
+              </div>)}
             </div>
           )
         })}
