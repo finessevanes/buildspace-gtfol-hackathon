@@ -26,7 +26,7 @@ const Poems = ({ allPosts, handleDownVote, handleUpVote, hasClaimedNFT, voteInde
                       </button>
                       ) 
                       : (<button
-                        disabled={index.toString() !== voteIndex}
+                        disabled={index.toString() !== voteIndex && voteIndex !== ''}
                         className={`hover:animate-bounce cursor-pointer text-3xl disabled:cursor-not-allowed disabled:opacity-50`}
                         value={index}
                         onClick={handleUpVote}>🍋</button>)
