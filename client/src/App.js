@@ -16,8 +16,15 @@ const App = () => {
   const [checking, setChecking] = useState(true);
   const [isOnRinkeby, setIsOnRinkeby] = useState(true);
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
+  const [modifiedAddress, setModifiedAddress] = useState('');
   const contractAddress = "0x29Eb53F350892bDe058F8FC95EB19258A4ae9020";
   const contractABI = abi.abi;
+
+  const modifyAddress = (address) => {
+    const lastThree = address.slice(-3);
+    const firstFour = address.slice(0, 4);
+    return setModifiedAddress(`${firstFour}...${lastThree}`)
+  }
 
   // allow user to connect to app with metamask, and obtain address
   const address = useAddress();
@@ -123,6 +130,7 @@ const App = () => {
     // And if wallet does not own Buildspace's NFT -> nfts.length == 0;
     const checkBalance = async () => {
       try {
+        modifyAddress(address)
         const nfts = await nftCollection.getOwned(address);
         if (nfts.length === 0) {
           setHasClaimedNFT(false);
@@ -196,6 +204,7 @@ const App = () => {
 
   const handleUpVote = () => {
     console.log('upvoted');
+    modifyAddress(address);
   }
 
   const handleDownVote = () => {
@@ -206,6 +215,9 @@ const App = () => {
     <div className={container}>
       {!isOnRinkeby && (
         <nav className="bg-yellowbutton w-full text-center text-buttontext">This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</nav>
+      )}
+      { address && (
+        <div className="rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end">{modifiedAddress}</div>
       )}
       <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe">The Great Wall of Ideas</p>
       <div className={stickynoteContainer}>
@@ -220,10 +232,10 @@ const App = () => {
         })}
       </div>
       <div class="flex justify-center">
-        <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6">
+        <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6 opacity-75 ">
           <p class="text-buttontext font-bold mt-4 mb-4">
-            Do you an idea you want to share? Connect you wallet below!
-            We want to be sure you are a Buildspace Alumni</p>
+            Are you a poet and didn't even know it? Share your poetry skills and see how the community votes
+          </p>
         </div>
       </div>
       <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
