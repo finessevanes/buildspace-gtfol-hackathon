@@ -299,7 +299,6 @@ const App = () => {
 
         )
       }
-      {renderVote()}
       {!address ? (
         <button className={buttonStyle} onClick={connectWallet}>
           Connect Wallet
