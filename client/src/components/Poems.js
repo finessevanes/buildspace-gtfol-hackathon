@@ -6,18 +6,38 @@ const Poems = ({ allPosts, handleDownVote, handleUpVote, hasClaimedNFT, voteInde
     <div className={stickynoteContainer}>
         {allPosts.map((post, index) => {
           return (
-            <div key={index} className={`${stickyNote} ${index.toString() === voteIndex ? 'animate- shadow-yellow-300/50' : ''}`}>
-              <p className='mb-12'>
-                {post.message}
-              </p>
+            <div className="flex flex-col">
+              <div key={index} className={`${stickyNote} ${index.toString() === voteIndex ? 'animate- shadow-yellow-300/50' : ''}`}>
+                <p className='mb-12'>
+                  {post.message}
+                </p>
+              </div>
+              <div>
               {hasClaimedNFT && 
-                (<>
-                  <span className='text-4xl mr-12'>{post.voteCount}</span>
-                  <button className={`hover:animate-bounce cursor-pointer mr-1 text-3xl ${!hasClaimedNFT && 'cursor-not-allowed opacity-50'}`}  value={index} onClick={handleUpVote}>🔥</button>
-                  <button className={`hover:animate-bounce cursor-pointer text-3xl ${hasClaimedNFT && 'cursor-not-allowed opacity-50'}`} value={index} onClick={handleDownVote}>💩</button>
-                </>)
+                (<div className="bg-red-400 rounded-xl m-4 flex place-content-evenly">
+                  <div className="flex">
+                    {index.toString() === voteIndex ?
+                      (
+                        <button
+                          className={`hover:animate-bounce cursor-pointer mr-1 text-3xl ${!hasClaimedNFT && 'cursor-not-allowed opacity-50'}`}
+                          value={index}
+                          onClick={handleUpVote}>
+                        🍋
+                      </button>
+                      ) 
+                      : (<button
+                        disabled={index.toString() !== voteIndex}
+                        className={`hover:animate-bounce cursor-pointer text-3xl disabled:cursor-not-allowed disabled:opacity-50`}
+                        value={index}
+                        onClick={handleDownVote}>🍋</button>)
+                  }
+                  </div>
+                  <span className='text-yellow-900 text-4xl'>{post.voteCount}</span>
+                </div>
+                )
               }
-            </div>
+              </div>
+              </div>
           )
         })}
       </div>
