@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import "./App.css";
 import abi from '../src/utils/SlamPost.json';
-import { container, stickyNote, stickynoteContainer, buttonStyle } from "./App.styles";
+import { container, buttonStyle } from "./App.styles";
+import Poems from "./components/Poems";
 import {
   useAddress, useMetamask, ChainId,
   useNetwork, useNetworkMismatch, useNFTCollection
@@ -274,27 +275,11 @@ const App = () => {
 
   return (
     <div className={container}>
-      {!isOnRinkeby && (
-        <nav className="bg-yellowbutton w-full text-center text-buttontext">This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</nav>
-      )}
-      { address && (
-        <div className="rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end">{modifiedAddress}</div>
-      )}
-      <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe">The Great Wall of Ideas</p>
-      <div className={stickynoteContainer}>
-        {allPosts.map((post, index) => {
-          return (
-            <div key={index} className={stickyNote}>
-              <p>{post.message}</p>
-              <p>Votes: {post.voteCount}</p>
-              {hasClaimedNFT && (<div>
-                <span className='cursor-pointer' onClick={() => handleUpVote(index)}>🔥</span>
-                <span className='cursor-pointer' onClick={() => handleDownVote(index)}>💩</span>
-              </div>)}
-            </div>
-          )
-        })}
-      </div>
+
+      <div className={`bg-yellowbutton w-full text-center text-buttontext ${isOnRinkeby? 'invisible' : 'visible'}`}>This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</div>
+      <div className={`rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end ${address? 'invisible' : 'visible'}`}>{modifiedAddress}</div>
+      <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe text-center">Slam Poetry</p>
+      <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} />
       <div class="flex justify-center">
         <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6 opacity-75 ">
           <p class="text-buttontext font-bold mt-4 mb-4">
@@ -304,7 +289,7 @@ const App = () => {
       </div>
       <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
       {!address ? (
-        <button className={buttonStyle} onClick={connectWallet}>
+        <button className={buttonStyle} onClick={getAllPosts}>
           Connect Wallet
         </button>
       ) : (
@@ -313,7 +298,6 @@ const App = () => {
         </button>)}
       {voting && (<h1 className="text-white">Voting...</h1>)}
       {renderVote()}
-      
     </div>
   );
 }
