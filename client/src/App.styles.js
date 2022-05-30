@@ -11,8 +11,8 @@ items-center
 `
 export const stickyNote = `
 text-center
-h-40
-w-44
+h-52
+w-64
 bg-rose-400
 p-7
 rounded-md
