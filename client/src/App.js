@@ -322,7 +322,7 @@ const App = () => {
         </button>
       ) : hasClaimedNFT && (
           <>
-            <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
+            <input type='text' className="my-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
             <button className={buttonStyle} onClick={post}>
               Make a post
             </button>

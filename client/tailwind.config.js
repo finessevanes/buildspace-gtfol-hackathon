@@ -6,6 +6,7 @@ module.exports = {
     extend: {
       backgroundImage: {
         'synthwave': "url('./assets/background.png')",
+        'note': "url('./assets/bg-stickernote.svg')"
       },
       colors: {
         vaneo: '#ef4444',
