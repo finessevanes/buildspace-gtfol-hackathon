@@ -219,7 +219,7 @@ const App = () => {
       { address && (
         <div className="rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end">{modifiedAddress}</div>
       )}
-      <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe">The Great Wall of Ideas</p>
+      <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe text-center">Slam Poetry</p>
       <div className={stickynoteContainer}>
         {allPosts.map((post, index) => {
           return (
