@@ -4,8 +4,14 @@ import "./App.css";
 import abi from '../src/utils/SlamPost.json';
 import { useAddress, useMetamask, useNetwork, useNetworkMismatch, useNFTCollection, useNFTDrop } from '@thirdweb-dev/react';
 import { container, stickyNote, stickynoteContainer } from "./App.styles";
+import {
+  useAddress, useMetamask, ChainId,
+  useNetwork, useNetworkMismatch, useNFTCollection
+} from '@thirdweb-dev/react';
 
 const App = () => {
+  const rinkebyId = "0x4";
+  const [init, setInit] = useState(true);
   const [allPosts, setAllPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [checking, setChecking] = useState(true);
@@ -111,28 +117,48 @@ const App = () => {
     };
   }, []);
 
+
+
   useEffect(() => {
     if (!address) {
       return;
     }
 
+    const checkNetwork = async () => {
+      const { ethereum } = window;
+      const chainId = await ethereum.request({ method: 'eth_chainId' });
+      if (chainId !== rinkebyId) {
+        console.log("diff chain")
+        switchNetwork(ChainId.Rinkeby);
+        ethereum.on('chainChanged', (_chainId) => {
+          window.location.reload();
+        })
+      } 
+    }
+
     // As we get errors if we owned Buildspace's NFT -> we can set it to true if there's an error
     // And if wallet does not own Buildspace's NFT -> nfts.length == 0;
     const checkBalance = async () => {
-      try {
-        const nfts = await nftCollection.getOwned(address);
-        if (nfts.length === 0) {
-          setHasClaimedNFT(false);
+        try {
+          const nfts = await nftCollection.getOwned(address);
+          if (nfts.length === 0) {
+            setHasClaimedNFT(false);
+          }
+          setChecking(false);
+        } catch (error) {
+          setHasClaimedNFT(true);
+          setChecking(false);
+          console.error("Failed to get NFTs", error);
         }
-        setChecking(false);
-      } catch (error) {
-        setHasClaimedNFT(true);
-        setChecking(false);
-        console.error("Failed to get NFTs", error);
-      }
     };
-    checkBalance();
+
+    if (init) {
+      checkNetwork();
+      checkBalance();
+      setInit(false);
+    }
   }, [
+    init,
     address,
     connectWallet,
     networkMismatched,
