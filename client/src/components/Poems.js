@@ -5,15 +5,18 @@ const Poems = ({ allPosts, handleDownVote, handleUpVote, hasClaimedNFT }) => {
   return (
     <div className={stickynoteContainer}>
         {allPosts.map((post, index) => {
+          console.log(post)
           return (
             <div key={index} className={stickyNote}>
-              Message: {post.message}
-              <p>{post.voteCount}</p>
+              <p className='mb-12'>
+              {post.message}
+              </p>
               {hasClaimedNFT && 
-                (<>
-                  <button className='cursor-pointer' value={index} onClick={handleUpVote}>🔥</button>
-                  <button className='cursor-pointer' value={index} onClick={handleDownVote}>💩</button>
-                </>)
+                (<div>
+                  <span className='text-4xl mr-12'>{post.voteCount}</span>
+                  <button className='cursor-pointer mr-1 text-3xl ' value={index} onClick={handleUpVote}>🔥</button>
+                  <button className='cursor-pointer text-3xl' value={index} onClick={handleDownVote}>💩</button>
+                </div>)
               }
             </div>
           )
