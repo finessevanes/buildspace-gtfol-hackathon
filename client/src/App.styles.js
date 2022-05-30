@@ -28,6 +28,7 @@ overflow-auto
 `
 
 export const buttonStyle = `
+disabled:bg-slate-50
 bg-yellowbutton
 hover:bg-yellow-100
 text-buttontext
