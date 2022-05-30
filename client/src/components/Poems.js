@@ -21,7 +21,7 @@ const Poems = ({ allPosts, handleDownVote, handleUpVote, hasClaimedNFT, voteInde
                         <button
                           className={`hover:animate-bounce cursor-pointer mr-1 text-3xl ${!hasClaimedNFT && 'cursor-not-allowed opacity-50'}`}
                           value={index}
-                          onClick={handleUpVote}>
+                          onClick={handleDownVote}>
                         🍋
                       </button>
                       ) 
@@ -29,7 +29,7 @@ const Poems = ({ allPosts, handleDownVote, handleUpVote, hasClaimedNFT, voteInde
                         disabled={index.toString() !== voteIndex}
                         className={`hover:animate-bounce cursor-pointer text-3xl disabled:cursor-not-allowed disabled:opacity-50`}
                         value={index}
-                        onClick={handleDownVote}>🍋</button>)
+                        onClick={handleUpVote}>🍋</button>)
                   }
                   </div>
                   <span className='text-yellow-900 text-4xl'>{post.voteCount}</span>
