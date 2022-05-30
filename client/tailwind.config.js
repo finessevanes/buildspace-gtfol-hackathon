@@ -6,6 +6,7 @@ module.exports = {
     extend: {
       backgroundImage: {
         'synthwave': "url('./assets/background.png')",
+        'note': "url('./assets/bg-stickernote.svg')"
       },
       colors: {
         vaneo: '#ef4444',
@@ -16,6 +17,9 @@ module.exports = {
       fontFamily: {
         smythe: ['Smythe, cursive']
       },
+      rotate: {
+        '358': '358deg',
+      }
     },
   },
   plugins: [],

@@ -2,29 +2,37 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import "./App.css";
 import abi from '../src/utils/SlamPost.json';
-import { useAddress, useMetamask, useNetwork, useNetworkMismatch, useNFTCollection, useNFTDrop } from '@thirdweb-dev/react';
-import { container, stickyNote, stickynoteContainer } from "./App.styles";
+import { container, buttonStyle } from "./App.styles";
+import Poems from "./components/Poems";
 import {
   useAddress, useMetamask, ChainId,
-  useNetwork, useNetworkMismatch, useNFTCollection
+  useNetwork, useNFTCollection
 } from '@thirdweb-dev/react';
+import { ReactComponent as DownArrowLogo } from './assets/down-arrow.svg';
+
 
 const App = () => {
   const rinkebyId = "0x4";
   const [init, setInit] = useState(true);
   const [allPosts, setAllPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
+  const [voting, setVoting] = useState(false);
   const [checking, setChecking] = useState(true);
   const [isOnRinkeby, setIsOnRinkeby] = useState(true);
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
-  const contractAddress = "0x29Eb53F350892bDe058F8FC95EB19258A4ae9020";
+  const [modifiedAddress, setModifiedAddress] = useState('');
+  const contractAddress = "0xD7d9a5fe4e8Af239169339AF04c376102924ba03";
   const contractABI = abi.abi;
+
+  const modifyAddress = (address) => {
+    const lastThree = address.slice(-3);
+    const firstFour = address.slice(0, 4);
+    return setModifiedAddress(`${firstFour}...${lastThree}`)
+  }
 
   // allow user to connect to app with metamask, and obtain address
   const address = useAddress();
   const connectWallet = useMetamask();
-  const networkMismatched = useNetworkMismatch();
-
   // Switch network
   const [, switchNetwork] = useNetwork();
 
@@ -68,14 +76,14 @@ const App = () => {
         const signer = provider.getSigner();
         const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
         const posts = await slamPostContract.getAllPosts();
-        console.log('## POSTS ##', posts);
-
+        
         let postsCleaned = [];
         posts.forEach(post => {
           postsCleaned.push({
             address: post.poster,
             timestamp: new Date(post.timestamp * 1000),
-            message: post.message
+            message: post.message,
+            voteCount: post.voteCount.toString()
           });
         });
 
@@ -88,6 +96,7 @@ const App = () => {
     }
   }
 
+  
   useEffect(() => {
     let slamPostContract;
     const onNewPost = (from, timestamp, message) => {
@@ -117,54 +126,39 @@ const App = () => {
     };
   }, []);
 
-
-
   useEffect(() => {
     if (!address) {
       return;
     }
 
-    const checkNetwork = async () => {
-      const { ethereum } = window;
-      const chainId = await ethereum.request({ method: 'eth_chainId' });
-      if (chainId !== rinkebyId) {
-        console.log("diff chain")
-        switchNetwork(ChainId.Rinkeby);
-        ethereum.on('chainChanged', (_chainId) => {
-          window.location.reload();
-        })
-      } 
-    }
-
     // As we get errors if we owned Buildspace's NFT -> we can set it to true if there's an error
     // And if wallet does not own Buildspace's NFT -> nfts.length == 0;
     const checkBalance = async () => {
-        try {
-          const nfts = await nftCollection.getOwned(address);
-          if (nfts.length === 0) {
-            setHasClaimedNFT(false);
-          }
-          setChecking(false);
-        } catch (error) {
-          setHasClaimedNFT(true);
-          setChecking(false);
-          console.error("Failed to get NFTs", error);
+      try {
+        modifyAddress(address)
+        const nfts = await nftCollection.getOwned(address);
+        if (nfts.length === 0) {
+          setHasClaimedNFT(false);
         }
+        setChecking(false);
+      } catch (error) {
+        setHasClaimedNFT(true);
+        setChecking(false);
+        console.error("Failed to get NFTs", error);
+      }
     };
 
     if (init) {
-      checkNetwork();
       checkBalance();
+      getAllPosts();
       setInit(false);
     }
   }, [
     init,
     address,
     connectWallet,
-    networkMismatched,
-    switchNetwork,
     nftCollection,
-    hasClaimedNFT
+    hasClaimedNFT,
   ])
 
   useEffect(() => {
@@ -179,66 +173,147 @@ const App = () => {
           window.location.reload();
         });
         const chainId = await ethereum.request({ method: 'eth_chainId' });
-        if (chainId === '0x4') {
+        if (chainId === rinkebyId) {
           setIsOnRinkeby(true)
         } else {
           setIsOnRinkeby(false)
+          switchNetwork(ChainId.Rinkeby);
         }
-  
+
       } catch (error) {
         console.log(error);
       }
     }
     checkIfRinkeby()
-  }, [])
+  }, [switchNetwork])
+
+  const handleVoteDetails = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const votedOn = await slamPostContract.userVotedOn();
+        // Help me with render the details in a div!!
+        alert("Voted On Poem #" + votedOn.index.toString() + " Message: " + votedOn.message);
+      }
+    } catch (error) {
+      alert("You have not voted!");
+      console.log(error);
+    }
+  }
 
   const renderVote = () => {
-    if (checking) {
-      return (
-        <div>
-          <h1 className="text-yellowbutton">Checking your wallet...</h1>
-        </div>
-      );
-    } else {
-      if (hasClaimedNFT) {
+    if (isOnRinkeby && address) {
+      if (checking) {
         return (
-          <h1 className="text-yellowbutton">You can vote!</h1>
-        )
+          <div>
+            <h1 className="text-white">Checking your wallet...</h1>
+          </div>
+        );
       } else {
-        return (<h1>No!!</h1>)
+        if (hasClaimedNFT) {
+          return (
+            <div className="text-white">
+              <h1>You can vote!</h1>
+              <button className={buttonStyle} onClick={handleVoteDetails}>I voted on..?</button>
+            </div>
+          )
+        } else {
+          return (<h1 className="text-white">No!!</h1>)
+        }
       }
+    }
+  }
+
+  const handleUpVote = async (e) => {
+    e.preventDefault();
+    const index = e.target.value;
+    console.log('upvoted', index);
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const vote = await slamPostContract.upVote(index);
+        setVoting(true);
+        await vote.wait()
+        setVoting(false);
+        getAllPosts();
+      } else {
+        console.log("Ethereum object doesn't exist!")
+      }
+    } catch (error) {
+      console.log(error);
+      // alert(error.message)
+    }
+  }
+
+  const handleDownVote = async (e) => {
+    e.preventDefault();
+    const index = e.target.value;
+    console.log(index)
+    console.log('downvoted', index);
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const slamPostContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const vote = await slamPostContract.downVote(index, { gasLimit: 300000 });
+        setVoting(true);
+        await vote.wait();
+        setVoting(false);
+        getAllPosts();
+      } else {
+        console.log("Ethereum object doesn't exist!")
+      }
+    } catch (error) {
+      console.log(error);
+      // alert(error.message)
     }
   }
 
   return (
     <div className={container}>
-      {!isOnRinkeby && (
-        <nav className="bg-yellowbutton w-full text-center text-buttontext">This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</nav>
-      )}
-      <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe">The Great Wall of Ideas</p>
-      <div className={stickynoteContainer}>
-        {allPosts.map((post, index) => {
-          return (
-            <div key={index} className={stickyNote}>
-              Message: {post.message}
-            </div>)
-        })}
-      </div>
-    <div class="flex justify-center">
-      <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6">
-        <p class="text-buttontext font-bold mt-4 mb-4">
-        Do you an idea you want to share? Connect you wallet below! 
-        We want to be sure you are a Buildspace Alumni</p>
-      </div>
-    </div>
-      <button className={buttonStyle} onClick={post}>Make a post</button>
-      <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
+      <div className={`bg-yellowbutton w-full text-center text-buttontext ${isOnRinkeby ? 'invisible' : 'visible'}`}>This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</div>
+      <div className={`rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mt-6 mr-6 self-end ${!address ? 'invisible' : 'visible'}`}>{modifiedAddress}</div>
+      <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe text-center">Slam Poetry</p>
+      <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} />
+      {address ?
+        (<div class="flex justify-center">
+          <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6 opacity-75 ">
+            <p class="text-buttontext font-bold mt-4 mb-4">
+              Are you a poet and didn't even know it? Share your poetry skills and see how the community votes
+            </p>
+          </div>
+        </div>)
+        : (
+          <>
+            <DownArrowLogo />
+            <DownArrowLogo />
+            <DownArrowLogo />
+          </>
+
+        )
+      }
       {renderVote()}
-      {!address && (
-          <button className={buttonStyle} onClick={connectWallet}>
-            Connect Wallet
+      {!address ? (
+        <button className={buttonStyle} onClick={connectWallet}>
+          Connect Wallet
+        </button>
+      ) : (
+        <>
+          <input type='text' className="mb-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
+          <button className={buttonStyle} onClick={post}>
+            Make a post
           </button>
+        </>
       )}
+      {voting && (<h1 className="text-white">Voting...</h1>)}
+      {renderVote()}
     </div>
   );
 }

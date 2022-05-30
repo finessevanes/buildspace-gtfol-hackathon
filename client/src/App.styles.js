@@ -11,23 +11,28 @@ items-center
 `
 export const stickyNote = `
 text-center
-h-40
-w-44
-bg-rose-400
-p-7
+h-52
+w-64
+bg-note
+bg-cover
+p-10
 rounded-md
 shadow-xl
 mr-4
 mb-4
+rotate-358
+overflow-auto
 `
 export const stickynoteContainer = `
-md:grid
-md:grid-cols-5
+md:flex
 md:justify-center
+md:w-full
 overflow-auto
+p-3
 `
 
 export const buttonStyle = `
+disabled:bg-slate-50
 bg-yellowbutton
 hover:bg-yellow-100
 text-buttontext
