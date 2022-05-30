@@ -298,7 +298,7 @@ const App = () => {
       {address ?
         (<div class="flex justify-center">
           <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6 opacity-75 ">
-            <p class="text-buttontext font-bold mt-4 mb-4">
+            <p class="text-buttontext font-bold mt-4 mb-4 text-center">
               Are you a poet and didn't even know it? Share your poetry skills and see how the community votes
             </p>
           </div>

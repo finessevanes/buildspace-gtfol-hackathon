@@ -12,7 +12,7 @@ module.exports = {
         vaneo: '#ef4444',
         notepad: '#fe7c97',
         yellowbutton: '#fff458',
-        buttontext: '#437db2'
+        buttontext: '#3C6F9F'
       },
       fontFamily: {
         smythe: ['Smythe, cursive']
