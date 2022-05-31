@@ -5,6 +5,7 @@ import abi from '../src/utils/SlamPost.json';
 import { container, buttonStyle } from "./App.styles";
 import Poems from "./components/Poems";
 import Spinner from "./components/Spinner"
+import Footer from "./components/Footer";
 import {
   useAddress, useMetamask, ChainId,
   useNetwork, useNFTCollection
@@ -327,11 +328,7 @@ const App = () => {
       {loading && (<Spinner />)}
       {renderVote()}
       <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} hasClaimedNFT={hasClaimedNFT} voteIndex={voteIndex}/>
-      <footer className="text-center lg:text-left">
-  <div className="text-yellowbutton text-center p-4">
-  Built for Buildspace Hackathon by Dri, Vanessa, Vera, and Julia
-  </div>
-</footer>
+      <Footer />
     </div>
   );
 }

@@ -15,7 +15,8 @@ module.exports = {
         buttontext: '#3C6F9F'
       },
       fontFamily: {
-        smythe: ['Smythe, cursive']
+        smythe: ['Smythe, cursive'],
+        roboto: ['Roboto Condensed, sans-serif'],
       },
       rotate: {
         '358': '358deg',
@@ -24,5 +25,3 @@ module.exports = {
   },
   plugins: [],
 }
-
-// /Users/VMercado/Desktop/buildspace-hackathon-gtfol/client/src/assets/background.png
