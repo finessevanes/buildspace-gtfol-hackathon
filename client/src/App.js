@@ -297,9 +297,9 @@ const App = () => {
       
       {address ?
         (<div class="flex justify-center">
-          <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6 opacity-75 ">
-            <p class="text-buttontext font-bold mt-4 mb-4">
-              Are you a poet and didn't even know it? Share your poetry skills and see how the community votes
+          <div class="block p-4 rounded-lg shadow-lg bg-white max-w-xl mt-6 opacity-75 w-4/5 bg-opacity-75">
+            <p class="text-buttontext font-bold mt-4 mb-4 text-center">
+              If you are a buildspace NFT holder you can post a poem. NFT holders can vote for their favorite by clicking on the 🍋
             </p>
           </div>
         </div>)
@@ -318,9 +318,9 @@ const App = () => {
         </button>
       ) : hasClaimedNFT && (
           <>
-            <input type='text' className="my-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="Type your message here" maxlength="100" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
+            <input type='text' className="my-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="E.g. haiku" maxlength="100" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
             <button className={buttonStyle} onClick={post}>
-              Make a post
+              Post Poem
             </button>
           </>
       )}
