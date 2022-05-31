@@ -3,33 +3,28 @@ import GithubLogo from '../assets/GitHub-Mark-64px.png';
 
 const Footer = () => {
     const footer = `
-    text-center lg:text-left bg-yellowbutton w-full opacity-90
+    flex
+    flex-row
+    pb-3
+    text-xs
+    lg:text-left
+    text-buttontext
+    font-monoton
+    w-full
+    bg-yellowbutton
+    opacity-90
     `
-  return (
-    <footer className={footer}>
-    <div className="text-buttontext font-monoton text-center p-3">
-    Weekend Hackathon
-    </div>
-    <div className='flex space text-xs'>
-        <div>
-        <img src={GithubLogo} />
-            <span>@twitter</span>
-        </div>
-        <div>
-            <span>@github</span>
-            <span>@twitter</span>
-        </div>
-        <div>
-            <span>@github</span>
-            <span>@twitter</span>
-        </div>
-        <div>
-            <span>@github</span>
-            <span>@twitter</span>
-        </div>
-    </div>
-  </footer>
-  )
+    return (
+        <footer className={footer}>
+            <p className='mt-8 ml-2'>
+                {'buildspace presents '}
+                <a href='https://lu.ma/vcp49bf7?tk=OQEjuv'>
+                    <span className='font-black underline text-md'>weekend hackathon</span>
+                    {' by weekend crew ⛵️'}
+                </a>
+            </p>
+        </footer>
+    )
 }
 
 export default Footer
