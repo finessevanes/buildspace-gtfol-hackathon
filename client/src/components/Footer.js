@@ -1,14 +1,13 @@
 import React from 'react'
-import GithubLogo from '../assets/GitHub-Mark-64px.png';
-
 const Footer = () => {
     const footer = `
     flex
     flex-row
-    pb-3
+    p-3
+    flex-col
     text-xs
-    lg:text-left
     text-buttontext
+    text-center
     font-monoton
     w-full
     bg-yellowbutton
@@ -16,10 +15,10 @@ const Footer = () => {
     `
     return (
         <footer className={footer}>
-            <p className='mt-8 ml-2'>
+            <p className='my-1 md:text-[9px] md:m-1'>
                 {'buildspace presents '}
                 <a href='https://lu.ma/vcp49bf7?tk=OQEjuv'>
-                    <span className='font-black underline text-md'>weekend hackathon</span>
+                    <span className='font-black underline md:text-[14px]'>weekend hackathon</span>
                     {' by weekend crew ⛵️'}
                 </a>
             </p>
