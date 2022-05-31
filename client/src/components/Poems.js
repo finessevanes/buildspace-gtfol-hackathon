@@ -38,7 +38,7 @@ const Poems = ({ allPosts, handleDownVote, handleUpVote, hasClaimedNFT, voteInde
                 )
                 }
                 {!hasClaimedNFT &&
-                  (<div className="bg-buttontext rounded-xl p-2 m-4 flex place-content-evenly">
+                  (<div key={index} className="bg-buttontext rounded-xl p-2 m-4 flex place-content-evenly">
                   <span className='text-yellowbutton text-4xl'>{post.voteCount}🍋</span>
                 </div>
                 )}

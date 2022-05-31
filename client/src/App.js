@@ -20,7 +20,6 @@ const App = () => {
   const [voteIndex, setVoteIndex] = useState('');
   const [voteDetails, setVoteDetails] = useState({});
   const [loading, setLoading] = useState(false);
-  const [checking, setChecking] = useState(true);
   const [isOnRinkeby, setIsOnRinkeby] = useState(true);
   const [hasClaimedNFT, setHasClaimedNFT] = useState(false);
   const [modifiedAddress, setModifiedAddress] = useState('');
@@ -111,6 +110,7 @@ const App = () => {
           address: from,
           timestamp: new Date(timestamp * 1000),
           message: message,
+          voteCount: "0"
         },
       ]);
     };
@@ -139,15 +139,16 @@ const App = () => {
     // And if wallet does not own Buildspace's NFT -> nfts.length == 0;
     const checkBalance = async () => {
       try {
+        setLoading(true);
         modifyAddress(address)
         const nfts = await nftCollection.getOwned(address);
         if (nfts.length === 0) {
           setHasClaimedNFT(false);
         }
-        setChecking(false);
+        setLoading(false);
       } catch (error) {
         setHasClaimedNFT(true);
-        setChecking(false);
+        setLoading(false);
         console.error("Failed to get NFTs", error);
       }
     };
@@ -207,20 +208,6 @@ const App = () => {
     } catch (error) {
       console.log(error);
     }
-  }
-
-  const renderVote = () => {
-    if (isOnRinkeby && address) {
-      if (checking) {
-        return (
-            <Spinner/>
-        );
-      }
-    }
-    return (
-      <div>
-      </div>
-    )
   }
 
   const handleUpVote = async (e) => {
@@ -316,7 +303,7 @@ const App = () => {
         <button className={buttonStyle} onClick={connectWallet}>
           Connect Wallet
         </button>
-      ) : hasClaimedNFT && (
+      ) : !loading && hasClaimedNFT && (
           <>
             <input type='text' className="my-6 px-10 py-3 rounded-sm overflow-auto" name="message" placeholder="E.g. haiku" maxlength="100" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
             <button className={buttonStyle} onClick={post}>
@@ -325,7 +312,6 @@ const App = () => {
           </>
       )}
       {loading && (<Spinner />)}
-      {renderVote()}
       <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} hasClaimedNFT={hasClaimedNFT} voteIndex={voteIndex}/>
       <footer className="text-center lg:text-left">
   <div className="text-yellowbutton text-center p-4">
