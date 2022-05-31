@@ -50,7 +50,9 @@ text-buttontext
 font-bold
 py-2
 px-4
-rounded-full
 mb-2
 mt-2
+rounded-lg 
+shadow
+shadow-yellow-300
 `
