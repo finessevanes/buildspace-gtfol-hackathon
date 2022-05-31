@@ -291,7 +291,7 @@ const App = () => {
 
   return (
     <div className={container}>
-      <div className={`bg-yellowbutton w-full text-center text-buttontext ${isOnRinkeby ? 'invisible' : 'visible'}`}>This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</div>
+      <div className={`bg-yellowbutton w-full text-center text-buttontext ${isOnRinkeby ? 'invisible' : 'visible mb-3'}`}>This app runs on the Rinkeby network. You are not currently connected to the Rinkeby network.</div>
       <div className={`rounded-lg bg-red-100 px-3 py-2 shadow-lg shadow-cyan-500/50 mr-6 self-end ${!address ? 'invisible' : 'visible'}`}>{modifiedAddress}</div>
       <p className="text-7xl text-yellowbutton mt-4 mb-4 font-smythe text-center animate-bounce">Slam Poetry</p>
       
