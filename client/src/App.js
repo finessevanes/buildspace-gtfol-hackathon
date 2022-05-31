@@ -6,6 +6,7 @@ import { container, buttonStyle } from "./App.styles";
 import Poems from "./components/Poems";
 import Spinner from "./components/Spinner"
 import Footer from "./components/Footer";
+import ContactUs from "./components/ContactUs";
 import {
   useAddress, useMetamask, ChainId,
   useNetwork, useNFTCollection
