@@ -7,8 +7,8 @@ const Poems = ({ allPosts, handleDownVote, handleUpVote, hasClaimedNFT, voteInde
 `}>
         {allPosts.map((post, index) => {
           return (
-            <div className="flex flex-col">
-              <div key={index} className={`${stickyNote} ${index.toString() === voteIndex ? 'animate- shadow-yellow-300/50' : ''}`}>
+            <div key={index} className="flex flex-col">
+              <div className={`${stickyNote} ${index.toString() === voteIndex ? 'animate- shadow-yellow-300/50' : ''}`}>
                 <p className='mb-12'>
                   {post.message}
                 </p>
@@ -38,7 +38,7 @@ const Poems = ({ allPosts, handleDownVote, handleUpVote, hasClaimedNFT, voteInde
                 )
                 }
                 {!hasClaimedNFT &&
-                  (<div key={index} className="bg-buttontext rounded-xl p-2 m-4 flex place-content-evenly">
+                  (<div className="bg-buttontext rounded-xl p-2 m-4 flex place-content-evenly">
                   <span className='text-yellowbutton text-4xl'>{post.voteCount}🍋</span>
                 </div>
                 )}
