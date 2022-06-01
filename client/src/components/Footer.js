@@ -12,6 +12,8 @@ const Footer = () => {
     w-full
     bg-yellowbutton
     opacity-90
+    fixed
+    bottom-0
     `
     return (
         <footer className={footer}>
