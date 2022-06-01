@@ -5,12 +5,12 @@ import abi from '../src/utils/SlamPost.json';
 import { container, buttonStyle } from "./App.styles";
 import Poems from "./components/Poems";
 import Spinner from "./components/Spinner"
+import Footer from "./components/Footer";
 import {
   useAddress, useMetamask, ChainId,
   useNetwork, useNFTCollection
 } from '@thirdweb-dev/react';
 import { ReactComponent as DownArrowLogo } from './assets/down-arrow.svg';
-
 
 const App = () => {
   const rinkebyId = "0x4";
@@ -313,11 +313,7 @@ const App = () => {
       )}
       {loading && (<Spinner />)}
       <Poems allPosts={allPosts} handleDownVote={handleDownVote} handleUpVote={handleUpVote} hasClaimedNFT={hasClaimedNFT} voteIndex={voteIndex}/>
-      <footer className="text-center lg:text-left">
-  <div className="text-yellowbutton text-center p-4">
-  Built for Buildspace Hackathon by Dri, Vanessa, Vera, and Julia
-  </div>
-</footer>
+      <Footer />
     </div>
   );
 }

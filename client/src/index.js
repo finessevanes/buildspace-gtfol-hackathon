@@ -9,5 +9,5 @@ const desiredChainId = ChainId.Polygon;
 ReactDOM.render(
   <ThirdwebProvider desiredChainId={desiredChainId}>
     <App />
-    </ThirdwebProvider>
+  </ThirdwebProvider>
   , document.getElementById('root'));
